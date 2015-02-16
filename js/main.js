@@ -11,6 +11,7 @@ $(document).ready(function() {
         /** save the "this" for when the context changes */
         var self = this;
         
+        self.ticker = ko.observable();
         self.typesSelection = ko.observableArray([]);
         
         /** 
@@ -31,35 +32,22 @@ $(document).ready(function() {
                 {cat: 'events', name: 'Silicon Milkroundabout', address: 'E1 6QL', city: 'london', lat: 51.5217064,long:  -0.0722892999999658, description: '', url: '', img: '', type:'readonly',visible:'true'},
                 {cat: 'coding spaces', name: 'Royal Festival Hall', address: 'SE1 8XX', city: 'london', lat: 51.5055375,long:  -0.1156066, description: '', url: '', img: '', type:'readonly',visible:'true'},
         ]);
-        self.geolocations = ko.observableArray([]);
-        /** 
-         * geocode the locations
-         */
-        function geocoding() {
-            var geocoder = new google.maps.Geocoder();
+        //
+        function reloadMarkers() {
+            console.log('inside reload markers');
             ko.utils.arrayForEach (self.locations(), function(location) {
+                if (!location.visible) {
+                    return false;
+                }
+                var latlng =  new google.maps.LatLng(location.lat,location.long);
                 // console.log(location.name);
-                var locaddress = location.address + ' ' + location.city;
-                geocoder.geocode( { 'address': locaddress}, function(results, status) {
-                      if (status == google.maps.GeocoderStatus.OK) {
-                          var latlng =  new google.maps.LatLng(results[0].geometry.location['k'], results[0].geometry.location['D']);
-                          console.log('geocoding: ' + status + ' ' + latlng + ' ' + location.name);
-                          addMarker(latlng,location);
-                          // console.log(location.name);
-                          // add to geolocation observablearray
-                          self.geolocations().push({name: location.name, latlng: latlng});
-                      } else {
-                        alert("Geocode was not successful for the following reason: " + status);
-                      }
-                });
+                addMarker(latlng,location);
             });
         };
+        //
         function addMarker(latlng,location) {
             // console.log(self.geolocations());
             // if the location is marked 'not visible', skip it
-            if (!location.visible) {
-                return false;
-            }
             var currentMarker;
             var marker = new google.maps.Marker({
                 map: self.map,
@@ -68,11 +56,9 @@ $(document).ready(function() {
                 title: location.name,
             });
             self.bounds.extend(latlng);
-            self.map.fitBounds(self.bounds);
-            self.map.setCenter(new google.maps.LatLng(self.locations()[0].lat, self.locations()[0].long));
             var contentString = 
                 '<div id="content">'+
-                '<h2>'+location.name+'</h2>'+
+                '<h3>'+location.name+'</h3>'+
                 '<div id="bodyContent">'+
                 '<p>'+location.description+'</p>'+
                 '<a href="'+location.url+'" target="_blank">'+location.url+'</a>'+
@@ -85,44 +71,57 @@ $(document).ready(function() {
                   currentMarker = this;
             });
         };
-        /** 
-         * IIFE so it's executed immediately
-         */
-        var initMap = function() {
-            //geocoding();
-            self.map = new google.maps.Map(document.getElementById('map-canvas'), {
-                zoom: 15,
-                center: new google.maps.LatLng(self.locations()[0].lat, self.locations()[0].long),
-                mapTypeId: google.maps.MapTypeId.ROADMAP
+        /**
+          * addToLocations - add to the locations array
+          */
+        var addToLocations = function(data) {
+            console.log('inside addToLocations');
+            // console.log(data.response.groups['0'].items);
+            $.each(data.response.groups['0'].items, function(k,v){
+                console.log(k);
+                console.log(v);
+                console.log(v.venue.name);
+                console.log(v.venue.location.lat);
+                console.log(v.venue.location.lat);
+                console.log(v.venue.categories['0'].name);
+                var loc = {
+                    cat:v.venue.categories['0'].name,
+                    name: v.venue.name, 
+                    address: v.venue.location.address, 
+                    city: v.venue.location.city+' '+v.venue.location.country, 
+                    lat: v.venue.location.lat,
+                    long: v.venue.location.lng, 
+                    description: '', 
+                    url: '', 
+                    img: '', 
+                    type:'foursquare',
+                    visible:'true'
+                };
+                self.locations.push(loc);
             });
-            ko.utils.arrayForEach (self.locations(), function(location) {
-                var latlng =  new google.maps.LatLng(location.lat,location.long);
-                // console.log(location.name);
-                addMarker(latlng,location);
-            });
-        }();
-        
+        }
         /**
           * access foursquare
           */
-        var foursquareQuery = function() {
+        var foursquareQuery = function(category) {
+            self.ticker('Accessing FourSquare searching '+category);
             var foursquareUrl = 'https://api.foursquare.com/v2/venues/explore?' +
                 'client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET + 
                 '&v=20150101&ll='+self.locations()[0].lat+','+
                 self.locations()[0].long+
-                '&query=coworking';
+                '&query='+category;
             $.getJSON(foursquareUrl, function(data){
-                console.log(data)
                 // TODO:
                 // extract the data you want to show
                 // push the data into the locations array
                 // and then what?? need to update the map
                 // 
+                addToLocations(data);
             }).fail(function(e){
                 alert('We are experiencing problems with the FourSquare interface. We apologise for the inconvenience. Please try again later');
                 console.log("error " + e);
             });
-        }();
+        };
         
         /**
           * access TFL
@@ -130,6 +129,18 @@ $(document).ready(function() {
         // access the tfl with a timer; get the trains stopping at Barbican station; 
         // could you show the trains between moorgate, barbican and farringdon?
         
+        // refresh the map every 2000ms
+        // TODO: is this a good idea?
+        setTimeout(function(){reloadMarkers();self.ticker('');}, '5000');
+
+        // TODO: reload markers must center the map and fitBounds
+        
+        // TODO: different categories must have different markers/colors
+        // TODO: the list of entries must be in a fixed size side bar
+        // TODO: the sidebar should be an overlay of the map
+        // TODO: are there urls in foursquare?
+        // 
+
 
         /**
          * update map bounds on page resize
@@ -140,5 +151,24 @@ $(document).ready(function() {
              self.map.setCenter(new google.maps.LatLng(self.locations()[0].lat, self.locations()[0].long));
              // $("#map-canvas").height($(window).height());
         });
+        /**
+          * event handler for click on map
+          */
+        document.getElementById('map-canvas').addEventListener('click', reloadMarkers());
+        /** 
+         * IIFE so it's executed immediately
+         */
+        var initMap = function() {
+            //geocoding();
+            self.map = new google.maps.Map(document.getElementById('map-canvas'), {
+                zoom: 15,
+                center: new google.maps.LatLng(self.locations()[0].lat, self.locations()[0].long),
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+            foursquareQuery('coworking');
+            reloadMarkers();
+            self.map.fitBounds(self.bounds);
+            self.map.setCenter(new google.maps.LatLng(self.locations()[0].lat, self.locations()[0].long));
+        }();
     }));
 });

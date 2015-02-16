@@ -8,8 +8,8 @@
     <meta name="author" content="Benedetto Lo Giudice">
     <link href="css/vendor/bootstrap.min.css" rel="stylesheet">
     <style type="text/css">
-      /* html { height: 100% } 
-      body { height: 100%; margin: 0; padding: 0 } */
+      html { height: 100% }*/
+      body { height: 100%; margin: 0; padding: 0 }
       #map-canvas { height: 700px }
     </style>
     <!-- TODO: conferma il seguente se corretto -->
@@ -26,7 +26,9 @@
             <div class="col-md-4" id="top-nav">
                 <h1>London for geeks</h1>
             </div>
-            <div class="col-md-8"></div>
+            <div class="col-md-8">
+                <span data-bind="text: ticker"></span>
+            </div>
         </div>
         <div class="row">
             <div id="map-canvas" class="col-md-11"></div>
