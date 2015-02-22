@@ -1,0 +1,19 @@
+{
+  "name": "p05_neighborhood_map_03",
+  "version": "1.0.0",
+  "description": "Udacity P5 Neighborhood Map",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bennythejudge/neighborhood-map-udacity-p5.git"
+  },
+  "author": "Benedetto Lo Giudice",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bennythejudge/neighborhood-map-udacity-p5/issues"
+  },
+  "homepage": "https://github.com/bennythejudge/neighborhood-map-udacity-p5"
+}
