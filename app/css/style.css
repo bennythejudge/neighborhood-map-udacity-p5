@@ -1,0 +1,49 @@
+/* TODO: sort out the responsiveness of the website */
+html { height: 100% }
+body { height: 100%; margin: 0; padding: 0 }
+#map-canvas { height: 500px }
+
+.header {
+  background: red;
+  display: block;
+}
+@media (max-height: 480px) {
+  .map-canvas {
+      height: 350px;
+      position: relative;
+  }
+/*  body {
+      font-size: 50%;
+  }
+  .ticker {
+      display: none;
+  }
+*/
+}
+@media (max-height: 667px) and (min-height: 481px){
+  .map-canvas {
+      height: 390px;
+      position: relative;
+  }
+/*  body {
+      font-size: 60%;
+  }
+*/}
+@media (max-height: 768px) and (min-height: 668px){
+  .map-canvas {
+      height: 450px;
+      position: relative;
+  }
+/*  body {
+      font-size: 75%;
+  }
+*/}
+@media (min-height: 769px) {
+  .map-canvas {
+      height: 550px;
+      position: relative;
+  }
+/*  body {
+      font-size: 85%;
+  }
+*/}

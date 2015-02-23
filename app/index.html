@@ -7,11 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="Benedetto Lo Giudice">
     <link href="css/vendor/bootstrap.min.css" rel="stylesheet">
-    <style type="text/css">
-      html { height: 100% }
-      body { height: 100%; margin: 0; padding: 0 }
-      #map-canvas { height: 700px }
-    </style>
+    <link rel="stylesheet" href="css/style.css" type="text/css">
     <!-- TODO: conferma il seguente se corretto -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -24,16 +20,21 @@
     <div class="container">
         <div class="row">
             <div class="col-md-4" id="top-nav">
-                <h1>London for geeks</h1>
+                <h1>London4geeks</h1>
             </div>
-            <div class="col-md-8">
+            <div class="col-md-1">
                 <span data-bind="text: ticker"></span>
+            </div>
+            <div class="col-md-7">
             </div>
         </div>
         <div class="row">
-            <div id="map-canvas" class="col-md-11"></div>
-            <div id="side-bar" class="col-md-1">
+            <div id="map-canvas" class="col-md-9"></div>
+            <div id="side-bar" class="col-md-3">
                 <h3>Locations</h3>
+                <span>Enter a value to search:</span>
+                <input data-bind="value: searchTerm"></input>
+                <br></br>
                 <ul data-bind="foreach: locations">
                     <li data-bind="text: name"></li>
                 </ul>

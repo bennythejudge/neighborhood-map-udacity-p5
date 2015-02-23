@@ -31,15 +31,15 @@ gulp.task('jshint', function () {
 });
 
 // Optimize Images
-gulp.task('images', function () {
-  return gulp.src('app/img/**/*')
-    .pipe($.cache($.imagemin({
-      progressive: true,
-      interlaced: true
-    })))
-    .pipe(gulp.dest('dist/images'))
-    .pipe($.size({title: 'images'}));
-});
+// gulp.task('images', function () {
+//   return gulp.src('app/img/**/*')
+//     .pipe($.cache($.imagemin({
+//       progressive: true,
+//       interlaced: true
+//     })))
+//     .pipe(gulp.dest('dist/images'))
+//     .pipe($.size({title: 'images'}));
+// });
 
 
 // Watch Files For Changes & Reload
@@ -53,27 +53,27 @@ gulp.task('serve', function () {
     server: ['.tmp', 'app']
   });
 
-  gulp.watch(['app/**/*.html'], reload);
-  gulp.watch(['app/css/**/*.{scss,css}'], ['styles', reload]);
-  gulp.watch(['app/js/**/*.js'], ['jshint']);
-  gulp.watch(['app/img/**/*'], reload);
+  gulp.watch(['app/*.html'], reload);
+  gulp.watch(['app/css/*.{scss,css}'], [reload]);
+  gulp.watch(['app/js/*.js'], ['jshint',reload]);
+  // gulp.watch(['app/img/**/*'], reload);
 });
 
-// Build Production Files, the Default Task
-gulp.task('default', ['clean'], function (cb) {
-  runSequence('styles', ['jshint', 'html', 'images', 'fonts', 'copy'], cb);
-});
+// // Build Production Files, the Default Task
+// gulp.task('default', ['clean'], function (cb) {
+//   runSequence('styles', ['jshint', 'html', 'fonts', 'copy'], cb);
+// });
 
 // Run PageSpeed Insights
 // Update `url` below to the public URL for your site
-gulp.task('pagespeed', pagespeed.bind(null, {
-  // By default, we use the PageSpeed Insights
-  // free (no API key) tier. You can use a Google
-  // Developer API key if you have one. See
-  // http://goo.gl/RkN0vE for info key: 'YOUR_API_KEY'
-  url: 'https://example.com',
-  strategy: 'mobile'
-}));
+// gulp.task('pagespeed', pagespeed.bind(null, {
+//   // By default, we use the PageSpeed Insights
+//   // free (no API key) tier. You can use a Google
+//   // Developer API key if you have one. See
+//   // http://goo.gl/RkN0vE for info key: 'YOUR_API_KEY'
+//   url: 'https://example.com',
+//   strategy: 'mobile'
+// }));
 
 // Load custom tasks from the `tasks` directory
 try { require('require-dir')('tasks'); } catch (err) {}

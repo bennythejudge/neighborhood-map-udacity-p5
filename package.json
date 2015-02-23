@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/bennythejudge/neighborhood-map-udacity-p5/issues"
   },
-  "homepage": "https://github.com/bennythejudge/neighborhood-map-udacity-p5"
+  "homepage": "https://github.com/bennythejudge/neighborhood-map-udacity-p5",
+  "devDependencies": {
+    "jshint-stylish": "^1.0.0"
+  }
 }
