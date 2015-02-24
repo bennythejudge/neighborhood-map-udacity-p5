@@ -6,9 +6,10 @@
 $(document).ready(function() {
     'use strict';
     var viewModel = function(Model,mapObject) {
-        console.log('inside viewModel');
+        // console.log('inside viewModel');
         /** save the "this" for when the context changes */
         var self = this;
+        var map;
         // observables
         // my main location in London
         self.mainLocation = ko.observable({
@@ -39,26 +40,33 @@ $(document).ready(function() {
                 {cat: 'hack spaces', name: 'London Hackspace', address: 'E2 9DY', city: 'london', lat: 51.531801,lng: -0.060318, description: 'Great space for hacking and building things.', url: 'https://london.hackspace.org.uk/', img: '', type:'readonly',visible:'true'},
         ]);
         self.typesSelection = ko.observableArray([]);
-        self.foursquarecategories = ko.observable([ 'coworking', 'startups']);
+        self.foursquarecategories = ko.observable([ 'coworking', 'startups','restaurants']);
         // 4square locations
-        self.locations = ko.observableArray([]);
+        self.locations = ko.observableArray();
         self.searchTerm = ko.observable('');
+        // needed later on
+        var pleaseHandleThisDisaster = function(a){
+            // console.log(a);
+            // console.log(self.locations());
+            self.locations.push(a);
+        }
         // get the ajax data
         ko.utils.arrayForEach(self.foursquarecategories(), function(cat) {
+            console.log('now searching 4square with '+cat);
             var CLIENT_ID='SNOQCJIS13MCJ0IWGDEUNKLZGPVY5MQVSPNFF0Z1CXMV5MH2';
             var CLIENT_SECRET='Z2PFXOJSYNMAU5XIM41HFD4TKHA0KRICYUPI3W0ZQVZFNPW3';
             var foursquareUrl = 'https://api.foursquare.com/v2/venues/explore?' +
             'client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET +
             '&v=20150101&ll='+self.mainLocation().lat+','+self.mainLocation().lng+
-            '&query='+self.foursquarecategories()[0];
+            '&query='+cat;
             var jqxr = $.getJSON(foursquareUrl)
             .fail(function(e){
                 alert('We are experiencing problems with the FourSquare interface.<br/> We apologise for the inconvenience. Please try again later');
                 console.log("error " + e);
             })
             .done(function(data){
-                console.log(data);
-                console.log(self.locations());
+                // console.log(data);
+                // console.log(self.locations());
                 $.each(data.response.groups['0'].items, function(k,v){
                     var loc = {
                         cat:v.venue.categories['0'].name,
@@ -73,12 +81,35 @@ $(document).ready(function() {
                         type:'foursquare',
                         visible:'true'
                     };
-                    self.locations.push(loc);
+                    pleaseHandleThisDisaster(loc);
                 });
+                pleaseShowTheMarkers();
             });
         });
-        console.log('outside');
-        console.log(self.locations());
+        var showMap = function() {
+            console.log('inside showMap');
+            self.map = new google.maps.Map(document.getElementById('map-canvas'), {
+                zoom: 15,
+                center: new google.maps.LatLng(self.mainLocation().lat,self.mainLocation().lng),
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+        }();
+        var pleaseShowTheMarkers = function() {
+            $.each(self.locations(),function(k,v){
+                // console.log(k,v);
+                // console.log(self.map);
+                var ll = new google.maps.LatLng(
+                  v.lat,
+                  v.lng
+                );
+                var marker = new google.maps.Marker({
+                    map: self.map,
+                    animation: google.maps.Animation.DROP,
+                    position: ll,
+                    title: v.name,
+                });
+            })
+        };
     };
     ko.applyBindings(new viewModel());
 });
