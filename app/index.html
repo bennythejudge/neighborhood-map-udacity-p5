@@ -20,10 +20,9 @@
     <div class="container">
         <div class="row">
             <div class="col-md-4" id="top-nav">
-                <h1>London4geeks</h1>
+                <h1>London4Geeks</h1>
             </div>
             <div class="col-md-1">
-                <span data-bind="text: ticker"></span>
             </div>
             <div class="col-md-7">
             </div>
@@ -35,6 +34,15 @@
                 <span>Enter a value to search:</span>
                 <input data-bind="value: searchTerm"></input>
                 <br></br>
+                <h4>4square categories</h4>
+                <ul data-bind="foreach: foursquarecategories">
+                    <li data-bind="text: $data"></li>
+                </ul>
+                <h4>My Locations</h4>
+                <ul data-bind="foreach: myLocations">
+                    <li data-bind="text: name"></li>
+                </ul>
+                <h4>4square locations</h4>
                 <ul data-bind="foreach: locations">
                     <li data-bind="text: name"></li>
                 </ul>
