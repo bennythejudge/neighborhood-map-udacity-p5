@@ -27,7 +27,7 @@ $(document).ready(function() {
                 visible:'true'
             };
             //console.log(this.mainLocation);
-            var bensfavs = [
+            this.bensfavs = [
                 {cat: 'culture', name: 'Barbican Centre', address: 'EC2Y 8DS', city: 'london', lat: 51.5204543, lng: -0.0937136999999666, description: 'Great venue for music, cinema and exhibitions.', url: 'http://www.barbican.org.uk/', img: '', type:'readonly',visible:'true'},
                 {cat: 'companies', name: 'Google', address: 'SW1W 9tq', city: 'london', lat: 51.49496560000001, lng: -0.14667389999999614, description: 'The Mothership', url: 'https://www.google.com', img: '', type:'readonly',visible:'true'},
                 {cat: 'cafes', name: 'Barbican Cinemas Cafe', address: 'Beech Street', city: 'london', lat: 51.5205906, lng: -0.09486970000000383, description: '<p>Not just great movies: a friendly space open</p><p> to the public used by people to work, teach, learn, meet etc...</p><p>I do a lot of coding here...</p>', url: '', img: '', type:'readonly',visible:'true'},
@@ -40,12 +40,74 @@ $(document).ready(function() {
                 {cat: 'cafes', name: 'Royal Festival Hall', address: 'SE1 8XX', city: 'london', lat: 51.5055375,lng: -0.1156066, description: '', url: '', img: '', type:'readonly',visible:'true'},
                 {cat: 'hack spaces', name: 'London Hackspace', address: 'E2 9DY', city: 'london', lat: 51.531801,lng: -0.060318, description: 'Great space for hacking and building things.', url: 'https://london.hackspace.org.uk/', img: '', type:'readonly',visible:'true'},
             ];
-            var foursquarelocations = [];
-            var foursquarecategories = [ 'coworking', 'startups'];
-            this.locations = foursquarelocations.concat(bensfavs);
-        },  // init
-        fetch4square: function(category) {
+            this.foursquarelocations = [];
+            this.foursquarecategories = [ 'coworking', 'startups'];
             
+            function() { 
+                return function(value) { 
+                    alert(elements[i] + value); 
+                } 
+            }(elements[i])
+            
+            
+            
+            
+            
+            
+            
+            this.fetch4square(this.foursquarelocations,this.foursquarecategories[0],(function(array,data){
+                // console.log('inside the function that is passed as callback to fetch4square');
+ //                console.log(data);
+ //                console.log(array);
+                $.each(data, function(k,v){
+                    // console.log(k);
+//                     console.log(v);
+//                     console.log(v.venue.name);
+//                     console.log(v.venue.location.lat);
+//                     console.log(v.venue.location.lat);
+//                     console.log(v.venue.categories['0'].name);
+                    var loc = {
+                        cat:v.venue.categories['0'].name,
+                        name: v.venue.name, 
+                        address: v.venue.location.address, 
+                        city: v.venue.location.city+' '+v.venue.location.country, 
+                        lat: v.venue.location.lat,
+                        lng: v.venue.location.lng, 
+                        description: '', 
+                        url: v.venue.url, 
+                        img: '', 
+                        type:'foursquare',
+                        visible:'true'
+                    };
+                    this.foursquarelocations.push(loc);
+                    console.log(array);
+                });
+            }.bind(this)));
+            console.log('back in the init');
+            console.log(this.foursquarelocations);
+            this.locations = this.foursquarelocations.concat(this.bensfavs);
+        },  // init
+        fetch4square: function(array,category,callback) {
+            var CLIENT_ID='SNOQCJIS13MCJ0IWGDEUNKLZGPVY5MQVSPNFF0Z1CXMV5MH2';
+            var CLIENT_SECRET='Z2PFXOJSYNMAU5XIM41HFD4TKHA0KRICYUPI3W0ZQVZFNPW3';
+            var foursquareUrl = 'https://api.foursquare.com/v2/venues/explore?' +
+            'client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET + 
+            '&v=20150101&ll='+this.mainLocation.lat+','+this.mainLocation.lng+'&query='+category;
+            return (
+                $.getJSON (
+                    foursquareUrl
+                ).done(function(data){
+                    console.log('\tinside the done of the ajax call');
+                    var locations = data.response.groups['0'].items;
+                    // passing to the callback the destination array and the locations from
+                    // 4square
+                    callback(array,locations); 
+                 }).fail(function(e){
+                    alert('We are experiencing problems with the FourSquare interface.'+'\n'+
+                     'We apologise for the inconvenience. \n Please try again later');
+                    console.log("error " + e);
+                })
+            );
         },
         getLocations: function() {
             // console.log('inside getLocations');
@@ -56,7 +118,7 @@ $(document).ready(function() {
             // console.log('inside getMainLocation');
             // console.log(this.mainLocation);
             return (this.mainLocation);
-        }
+        },
     };
     /**
     * an object for all things googlemaps
@@ -75,10 +137,10 @@ $(document).ready(function() {
             // console.log('inside addMarkers: '+locations + ' map: ' + map);
             // console.log(this.map);
             $.each(locations,function(k,v){
-                console.log(k,v);
-                console.log(v);
+                // console.log(k,v);
+                // console.log(v);
                 var myLatlng = new google.maps.LatLng(v.lat,v.lng);
-                console.log(myLatlng);
+                // console.log(myLatlng);
                 var marker = new google.maps.Marker({
                     map: map,
                     animation: google.maps.Animation.DROP,
@@ -115,17 +177,10 @@ $(document).ready(function() {
         },
         
     };
-    /**
-    * in honour of the extreme confusion that I have suffered 
-    * during this project, I have decided to name this section the
-    * mapViewModelController. Dedicated to coach Mark Nguyen
-    */
     var viewModel = function(Model,mapObject) {
         console.log('inside viewModel');
         // console.log(Model);
         // console.log(mapObject);
-        var CLIENT_ID='SNOQCJIS13MCJ0IWGDEUNKLZGPVY5MQVSPNFF0Z1CXMV5MH2';
-        var CLIENT_SECRET='Z2PFXOJSYNMAU5XIM41HFD4TKHA0KRICYUPI3W0ZQVZFNPW3';
         /** save the "this" for when the context changes */
         var self = this;
         // get the model started
@@ -167,57 +222,6 @@ $(document).ready(function() {
             });
         };
         //
-        /**
-          * addToLocations - add to the locations array
-          */
-        var addToLocations = function(data) {
-            console.log('inside addToLocations');
-            // console.log(data.response.groups['0'].items);
-            $.each(data.response.groups['0'].items, function(k,v){
-                console.log(k);
-                console.log(v);
-                console.log(v.venue.name);
-                console.log(v.venue.location.lat);
-                console.log(v.venue.location.lat);
-                console.log(v.venue.categories['0'].name);
-                var loc = {
-                    cat:v.venue.categories['0'].name,
-                    name: v.venue.name, 
-                    address: v.venue.location.address, 
-                    city: v.venue.location.city+' '+v.venue.location.country, 
-                    lat: v.venue.location.lat,
-                    lng: v.venue.location.lng, 
-                    description: '', 
-                    url: '', 
-                    img: '', 
-                    type:'foursquare',
-                    visible:'true'
-                };
-                self.locations.push(loc);
-            });
-        }
-        /**
-          * access foursquare
-          */
-        var foursquareQuery = function(category) {
-            self.ticker('Accessing FourSquare searching '+category);
-            var foursquareUrl = 'https://api.foursquare.com/v2/venues/explore?' +
-                'client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET + 
-                '&v=20150101&ll='+self.locations()[0].lat+','+
-                self.locations()[0].lng+
-                '&query='+category;
-            $.getJSON(foursquareUrl, function(data){
-                // TODO:
-                // extract the data you want to show
-                // push the data into the locations array
-                // and then what?? need to update the map
-                // 
-                addToLocations(data);
-            }).fail(function(e){
-                alert('We are experiencing problems with the FourSquare interface. We apologise for the inconvenience. Please try again later');
-                console.log("error " + e);
-            });
-        };
         /**
           * access TFL
           */
