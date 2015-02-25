@@ -47,7 +47,7 @@ $(document).ready(function() {
                 {cat: 'ben\'s favorites', name: 'Google', address: 'SW1W 9tq', city: 'london', lat: 51.49496560000001, lng: -0.14667389999999614, description: 'The Mothership', url: 'https://www.google.com', img: '', type:'readonly',visible:true},
                 {cat: 'ben\'s favorites', name: 'Barbican Cinemas Cafe', address: 'Beech Street', city: 'london', lat: 51.5205906, lng: -0.09486970000000383, description: '<p>Not just great movies: a friendly space open</p><p> to the public used by people to work, teach, learn, meet etc...</p><p>I do a lot of coding here...</p>', url: '', img: '', type:'readonly',visible:true},
                 {cat: 'ben\'s favorites', name: 'Amazon Development Centre', address: 'EC1A 4JU', city: 'london', lat: 51.5216718, lng: -0.09826629999997749, description: '', url: '', img: '', type:'readonly',visible:true},
-                {cat: 'ben\'s favorites', name: 'Silicon Roundabout', address: 'EC1Y 1BE', city: 'london', lat: 51.52567029999999, lng: -0.08756149999999252, description: '', url: '', img: '', type:'readonly',visible:true},
+                {cat: 'ben\'s favorites', name: 'Silicon Roundabout', address: 'EC1Y 1BE', city: 'london', lat: 51.52567029999999, lng: -0.08756149999999252, description: 'London\'s answer to Silicon Valley. Dirty, smogged, dangerous, noisy. Ugly!', url: '', img: '', type:'readonly',visible:true},
                 {cat: 'ben\'s favorites', name: 'Shoreditch High Street station', address: 'Shoreditch High Street station', city: 'london', lat: 51.52338, lng: -0.07521999999994478, description: '', url: '', img: '', type:'readonly',visible:true},
                 {cat: 'ben\'s favorites', name: 'Apple store', address: 'W1B 2EL', city: 'london', lat: 51.5142651, lng: -0.14222989999996116, description: 'First store to open in Europe in 2004', url: 'http://tinyurl.com/kwo7qnz', img: '', type:'readonly',visible:true},
                 {cat: 'ben\'s favorites', name: 'Boxpark shoreditch', address: 'E1 6gy', city: 'london', lat: 51.52338109999999, lng: -0.07573070000000826, description: '', url: '', img: '', type:'readonly',visible:true},
@@ -147,6 +147,7 @@ $(document).ready(function() {
                     '<p>type: ' + location.cat + '</p>' +
                     url +
                     '<p>source: ' + location.type + '</p>' +
+                    '<p>'+ location.description + '</p>' +
                     '</div>';
                 marker.info = new google.maps.InfoWindow({
                     content: contentString
