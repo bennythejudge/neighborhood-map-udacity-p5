@@ -9,7 +9,6 @@ barbican (ben's favorites)
 6) hovering on the choices changes the color
 7) infowindow
 8) clikcing on an entry opens the infowindow and makes the marker jump
-9) search function
 
 /** 
  * this is the viewModel
@@ -25,10 +24,9 @@ $(document).ready(function() {
         // google maps
         var map;
         // one single infowindow object shared
-        var infowindow = new google.maps.InfoWindow({
-          content: null
-        });
+        self.infowindow = new google.maps.InfoWindow();
         // observables
+        self.errorMessage = ko.observable('All is ok!');
         // my main location in London
         self.mainLocation = ko.observable({
             cat: 'culture', 
@@ -61,6 +59,9 @@ $(document).ready(function() {
         self.foursquarecategories = ko.observable([ 'coworking']);
         // 4square locations
         self.locations = ko.observableArray();
+        self.locations.subscribe(function(value){
+            
+        })
         self.query = ko.observable('');
         self.computedLocations = ko.computed(function(){
             return ko.utils.arrayFilter(self.locations(), function(entry){
@@ -68,16 +69,9 @@ $(document).ready(function() {
                 return entry.name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0;
             })
         });
-        // needed later on
-        var pleaseHandleThisDisaster = function(a){
-            // console.log(a);
-            // console.log(self.locations());
-            self.locations.push(a);
-            // console.log(self.locations());
-        }
         // get the ajax data
         ko.utils.arrayForEach(self.foursquarecategories(), function(cat) {
-            // console.log('now searching 4square with '+cat);
+            console.log('now searching 4square with '+cat);
             var CLIENT_ID='SNOQCJIS13MCJ0IWGDEUNKLZGPVY5MQVSPNFF0Z1CXMV5MH2';
             var CLIENT_SECRET='Z2PFXOJSYNMAU5XIM41HFD4TKHA0KRICYUPI3W0ZQVZFNPW3';
             var foursquareUrl = 'https://api.foursquare.com/v2/venues/explore?' +
@@ -92,6 +86,7 @@ $(document).ready(function() {
             .done(function(data){
                 // console.log(data);
                 // console.log(self.locations());
+                // console.log(data);
                 $.each(data.response.groups['0'].items, function(k,v){
                     // console.log(v);
                     var loc = {
@@ -106,11 +101,12 @@ $(document).ready(function() {
                         img: '',
                         type:'foursquare',
                         visible: true,
-                        displayed: false,
-                        marker: ''
+                        marker: {},
+                        
                     };
                     // console.log(loc);
-                    pleaseHandleThisDisaster(loc);
+                    // pleaseHandleThisDisaster(loc);
+                    self.locations.push(loc);
                 });
                 pleaseShowTheMarkers();
                 self.computedLocations.subscribe(function(value){
@@ -129,10 +125,6 @@ $(document).ready(function() {
             });
         }();
         var pleaseShowTheMarkers = function() {
-            var addInfoWindow = function(location){
-                console.log('adding infowindow');
-                console.log(location);
-            };
             var showMarker = function(location) {
                 var ll = new google.maps.LatLng(
                   location.lat,
@@ -145,6 +137,25 @@ $(document).ready(function() {
                     title: location.name,
                 });
                 location.marker=marker;
+                var url = (! location.url) ? '<p>no url</p>' : '<p>url: <a href="'  + 
+                                                            location.url + 
+                                                            '" target="_blank">' + 
+                                                            location.url + 
+                                                            '<a></p>';
+                var contentString = '<div id="content">' + 
+                    '<p>name: ' + location.name + '</p>' +
+                    '<p>type: ' + location.cat + '</p>' +
+                    url +
+                    '<p>source: ' + location.type + '</p>' +
+                    '</div>';
+                marker.info = new google.maps.InfoWindow({
+                    content: contentString
+                });
+                google.maps.event.addListener(marker, 'click', function() {
+                    // console.log(marker.info.content);
+                    self.infowindow.setContent(marker.info.content);
+                    self.infowindow.open(self.map,marker);
+                 });
             };
             $.each(self.myLocations(),function(k,v){
                 showMarker(v);
@@ -163,10 +174,19 @@ $(document).ready(function() {
             // console.log('diff');
             // console.log(diff[1]);
             $.each(diff,function(k,v){
-                v.marker.setMap(null);
+                if (v.visible) {
+                    v.marker.setMap(null);
+                    v.visible=false;
+                }
             });
             $.each(self.computedLocations(),function(k,v){
-                v.marker.setMap(self.map);
+                // console.log('next one is 184');
+                // console.log(v);
+                // console.log(self.map);
+                if (v.marker && !v.visible) {
+                    v.marker.setMap(self.map);
+                    v.visible=true;
+                }
             });
         };
     };   // end of the viewModel

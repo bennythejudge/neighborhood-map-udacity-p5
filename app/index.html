@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="Benedetto Lo Giudice">
-    <link href="css/vendor/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css" type="text/css">
+    <!-- <link href="css/vendor/bootstrap.min.css" rel="stylesheet"> -->
+    <!-- <link rel="stylesheet" href="css/style.css" type="text/css"> -->
     <!-- TODO: conferma il seguente se corretto -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -15,35 +15,47 @@
     <script type="text/javascript"
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgUQ1n-me0Lb0QVVSdgHSxSGFw_pmvr9A&libraries=geometry">
     </script>
+    <style>
+        #map-canvas {
+          height:100%;
+          width:80%;
+          position:absolute;
+          top:0;
+          left:0;
+          z-index:0;
+          opacity:.95;
+        }
+        #side-bar {
+          position:absolute;
+          z-index:1;
+          height: 100%;
+          width:20%;
+          right: 0;
+          top: 0;
+          overflow-y: scroll;
+          background-color: #BDC0D9;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4" id="top-nav">
-                <h1>London4Geeks</h1>
-            </div>
-            <div class="col-md-1">
-            </div>
-            <div class="col-md-7">
-            </div>
+    <div id="wrapper">
+        <div id="map-canvas"></div>
+        <div id="side-bar">
+            <h2>London4Geeks</h2>
+            <h3>Locations</h3>
+            <h4>My Locations</h4>
+            <ul data-bind="foreach: myLocations">
+                <li data-bind="text: name"></li>
+            </ul>
+            <h4>4square locations</h4>
+            <input placeholder="Search locations..." type="search" data-bind="value: query, valueUpdate: 'keyup'" autocomplete="off"></input>
+            <ul data-bind="foreach: computedLocations">
+                <li data-bind="text: name"></li>
+            </ul>
         </div>
-        <div class="row">
-            <div id="map-canvas" class="col-md-9"></div>
-            <div id="side-bar" class="col-md-3">
-                <h3>Locations</h3>
-                <input placeholder="Search locations..." type="search" data-bind="value: query, valueUpdate: 'keyup'" autocomplete="off"></input>
-                <br></br>
-                <h4>My Locations</h4>
-                <ul data-bind="foreach: myLocations">
-                    <li data-bind="text: name"></li>
-                </ul>
-                <hr/>
-                <h4>4square locations</h4>
-                <ul data-bind="foreach: computedLocations">
-                    <li data-bind="text: name"></li>
-                </ul>
-            </div>
-        </div>
+    </div>
+    <div>
+        <span data-bind="text: errorMessage"></span>
     </div>
     <script src="js/vendor/jquery.min.js"></script>
     <script src="js/vendor/knockout-3.2.0.js"></script>

@@ -1,6 +1,6 @@
 /* TODO: sort out the responsiveness of the website */
 html { height: 100% }
-body { height: 100%; margin: 0; padding: 0 }
+body { height: 100%; margin: 0; padding: 0 ; overflow-y: scroll; }
 #map-canvas { height: 500px }
 
 .header {
@@ -42,7 +42,7 @@ body { height: 100%; margin: 0; padding: 0 }
   .map-canvas {
       height: 550px;
       position: relative;
-  }
+}
 /*  body {
       font-size: 85%;
   }
