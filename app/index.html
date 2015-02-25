@@ -31,19 +31,15 @@
             <div id="map-canvas" class="col-md-9"></div>
             <div id="side-bar" class="col-md-3">
                 <h3>Locations</h3>
-                <span>Enter a value to search:</span>
-                <input data-bind="value: searchTerm"></input>
+                <input placeholder="Search locations..." type="search" data-bind="value: query, valueUpdate: 'keyup'" autocomplete="off"></input>
                 <br></br>
-                <h4>4square categories</h4>
-                <ul data-bind="foreach: foursquarecategories">
-                    <li data-bind="text: $data"></li>
-                </ul>
                 <h4>My Locations</h4>
                 <ul data-bind="foreach: myLocations">
                     <li data-bind="text: name"></li>
                 </ul>
+                <hr/>
                 <h4>4square locations</h4>
-                <ul data-bind="foreach: locations">
+                <ul data-bind="foreach: computedLocations">
                     <li data-bind="text: name"></li>
                 </ul>
             </div>
