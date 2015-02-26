@@ -43,11 +43,11 @@
         <div id="side-bar">
             <h2>London4Geeks</h2>
             <h3>Locations</h3>
-            <h4>My Locations</h4>
+            <h4>My Locations<img src="http://maps.google.com/mapfiles/ms/icons/green-dot.png"/></h4>
             <ul data-bind="foreach: myLocations">
                 <li data-bind="text: name"></li>
             </ul>
-            <h4>4square locations</h4>
+            <h4>4square locations<img src="http://maps.google.com/mapfiles/ms/icons/purple-dot.png"/></h4>
             <input placeholder="Search locations..." type="search" data-bind="value: query, valueUpdate: 'keyup'" autocomplete="off"></input>
             <ul data-bind="foreach: computedLocations">
                 <li data-bind="text: name"></li>

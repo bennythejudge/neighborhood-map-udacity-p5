@@ -9,6 +9,17 @@ barbican (ben's favorites)
 6) hovering on the choices changes the color
 7) infowindow
 8) clikcing on an entry opens the infowindow and makes the marker jump
+9) add a custom control to center the map (https://developers.google.com/maps/documentation/javascript/examples/control-custom)
+icons:
+restaurants
+https://maps.google.com/mapfiles/kml/shapes/dining.png
+coffee.png
+large_red.png
+yellow
+green
+blue
+purple
+
 
 /** 
  * this is the viewModel
@@ -45,12 +56,11 @@ $(document).ready(function() {
         self.myLocations = ko.observableArray([
                 {cat: 'ben\'s favorites', name: 'Barbican Centre', address: 'EC2Y 8DS', city: 'london', lat: 51.5204543, lng: -0.0937136999999666, description: 'Great venue for music, cinema and exhibitions.', url: 'http://www.barbican.org.uk/', img: '', type:'readonly',visible:true},
                 {cat: 'ben\'s favorites', name: 'Google', address: 'SW1W 9tq', city: 'london', lat: 51.49496560000001, lng: -0.14667389999999614, description: 'The Mothership', url: 'https://www.google.com', img: '', type:'readonly',visible:true},
-                {cat: 'ben\'s favorites', name: 'Barbican Cinemas Cafe', address: 'Beech Street', city: 'london', lat: 51.5205906, lng: -0.09486970000000383, description: '<p>Not just great movies: a friendly space open</p><p> to the public used by people to work, teach, learn, meet etc...</p><p>I do a lot of coding here...</p>', url: '', img: '', type:'readonly',visible:true},
-                {cat: 'ben\'s favorites', name: 'Amazon Development Centre', address: 'EC1A 4JU', city: 'london', lat: 51.5216718, lng: -0.09826629999997749, description: '', url: '', img: '', type:'readonly',visible:true},
+                {cat: 'ben\'s favorites', name: 'Barbican Cinemas Cafe', address: 'Beech Street', city: 'london', lat: 51.5205906, lng: -0.09486970000000383, description: '<p>Besides movies of great quality from all over the world, this is also a friendly space open</p><p> to the public used by people to work, teach, learn, meet etc...</p><p>I do a lot of coding here...</p>', url: '', img: '', type:'readonly',visible:true},
                 {cat: 'ben\'s favorites', name: 'Silicon Roundabout', address: 'EC1Y 1BE', city: 'london', lat: 51.52567029999999, lng: -0.08756149999999252, description: 'London\'s answer to Silicon Valley. Dirty, smogged, dangerous, noisy. Ugly!', url: '', img: '', type:'readonly',visible:true},
-                {cat: 'ben\'s favorites', name: 'Shoreditch High Street station', address: 'Shoreditch High Street station', city: 'london', lat: 51.52338, lng: -0.07521999999994478, description: '', url: '', img: '', type:'readonly',visible:true},
+                {cat: 'ben\'s favorites', name: 'Shoreditch High Street station', address: 'Shoreditch High Street station', city: 'london', lat: 51.52338, lng: -0.07521999999994478, description: 'HERE BE HIPSTERS!', url: '', img: '', type:'readonly',visible:true},
                 {cat: 'ben\'s favorites', name: 'Apple store', address: 'W1B 2EL', city: 'london', lat: 51.5142651, lng: -0.14222989999996116, description: 'First store to open in Europe in 2004', url: 'http://tinyurl.com/kwo7qnz', img: '', type:'readonly',visible:true},
-                {cat: 'ben\'s favorites', name: 'Boxpark shoreditch', address: 'E1 6gy', city: 'london', lat: 51.52338109999999, lng: -0.07573070000000826, description: '', url: '', img: '', type:'readonly',visible:true},
+                {cat: 'ben\'s favorites', name: 'Boxpark shoreditch', address: 'E1 6gy', city: 'london', lat: 51.52338109999999, lng: -0.07573070000000826, description: 'popup stores and interesting street foods. very HIP! do not come here unless you sport a modern beard', url: '', img: '', type:'readonly',visible:true},
                 {cat: 'ben\'s favorites', name: 'Silicon Milkroundabout', address: 'E1 6QL', city: 'london', lat: 51.5217064,lng:  -0.0722892999999658, description: '', url: '', img: '', type:'readonly',visible:true},
                 {cat: 'ben\'s favorites', name: 'Royal Festival Hall', address: 'SE1 8XX', city: 'london', lat: 51.5055375,lng: -0.1156066, description: '', url: '', img: '', type:'readonly',visible:true},
                 {cat: 'ben\'s favorites', name: 'London Hackspace', address: 'E2 9DY', city: 'london', lat: 51.531801,lng: -0.060318, description: 'Great space for hacking and building things.', url: 'https://london.hackspace.org.uk/', img: '', type:'readonly',visible:true},
@@ -126,15 +136,26 @@ $(document).ready(function() {
         }();
         var pleaseShowTheMarkers = function() {
             var showMarker = function(location) {
+                var markergreen = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png';
+                var markerred = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+                var markerpurple = 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png';
+                var mIcon = markerred;
                 var ll = new google.maps.LatLng(
                   location.lat,
                   location.lng
                 );
+                console.log(location.cat)
+                if (location.cat ===  "Coworking Space") {
+                    mIcon = markerpurple;
+                } else {
+                    mIcon = markergreen;
+                }
                 var marker = new google.maps.Marker({
                     map: self.map,
                     animation: google.maps.Animation.DROP,
                     position: ll,
                     title: location.name,
+                    icon: mIcon,
                 });
                 location.marker=marker;
                 var url = (! location.url) ? '<p>no url</p>' : '<p>url: <a href="'  + 
@@ -144,7 +165,7 @@ $(document).ready(function() {
                                                             '<a></p>';
                 var contentString = '<div id="content">' + 
                     '<p>name: ' + location.name + '</p>' +
-                    '<p>type: ' + location.cat + '</p>' +
+                    '<p>category: ' + location.cat + '</p>' +
                     url +
                     '<p>source: ' + location.type + '</p>' +
                     '<p>'+ location.description + '</p>' +
