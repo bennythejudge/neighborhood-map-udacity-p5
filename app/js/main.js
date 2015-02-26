@@ -10,7 +10,8 @@ ex: barbican (ben's favorites)
 13) check for all possible errors and failures
 - disconnect wifi 
 - google maps (google not defined in particular)
-14) give entries in the sidebar alternating colors to make them more visible
+14) highlight entry in sidebar when it's selected
+
 
 /** 
  * this is the viewModel
@@ -171,16 +172,15 @@ $(document).ready(function() {
                 // console.log('before--------');
                 // console.log(self.bounds);
                 // console.log('before--------');
-                var url = (! location.url) ? '<p>no url</p>' : '<p>url: <a href="'  + 
+                var url = (! location.url) ? '<p>no url</p>' : '<p><a href="'  + 
                                                             location.url + 
                                                             '" target="_blank">' + 
                                                             location.url + 
                                                             '<a></p>';
                 var contentString = '<div id="content">' + 
-                    '<p>name: ' + location.name + '</p>' +
-                    '<p>category: ' + location.cat + '</p>' +
+                    '<p>'+ location.name + '</p>' +
+                    '<p>' + location.cat + '</p>' +
                     url +
-                    '<p>source: ' + location.type + '</p>' +
                     '<p>'+ location.description + '</p>' +
                     '</div>';
                 marker.info = new google.maps.InfoWindow({
@@ -189,10 +189,6 @@ $(document).ready(function() {
                 marker.infocontent = contentString;
                 google.maps.event.addListener(marker, 'click', function() {
                     openInfoWindow(marker,self.map);
-                    // self.infowindow.setContent(marker.info.content);
-                    // self.infowindow.open(self.map,marker);
-                    // marker.setAnimation(google.maps.Animation.BOUNCE);
-                    // setTimeout(function(){ marker.setAnimation(null); }, 710);
                 });
             };
             $.each(self.myLocations(),function(k,v){
@@ -223,7 +219,6 @@ $(document).ready(function() {
                     v.marker.setMap(self.map);
                     v.visible=true;
                     // we need to change the bounds
-                    // 
                     self.bounds.extend(v.marker.position);
                 }
             });
@@ -232,10 +227,6 @@ $(document).ready(function() {
         };
         self.locationClickHandler = function(location) {
             openInfoWindow(location.marker,self.map);
-            // self.infowindow.setContent(location.marker.infocontent);
-            // self.infowindow.open(self.map,location.marker);
-            // location.marker.setAnimation(google.maps.Animation.BOUNCE);
-            // setTimeout(function(){ location.marker.setAnimation(null); }, 750);
         };
     };   // end of the viewModel
     var vm = new viewModel();

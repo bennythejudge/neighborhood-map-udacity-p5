@@ -36,6 +36,12 @@
           overflow-y: scroll;
           background-color: #BDC0D9;
         }
+        ul
+        {
+            list-style-type: none;
+            border: 0;
+            padding: 0;
+        }
     </style>
 </head>
 <body>
@@ -48,12 +54,16 @@
             <h3>Locations</h3>
             <h4>My Locations<img src="http://maps.google.com/mapfiles/ms/icons/green-dot.png"/></h4>
             <ul data-bind="foreach: myLocations">
-                <li data-bind="click: $root.locationClickHandler,text: name"></li>
+                <li>
+                    <button data-bind="click: $root.locationClickHandler,text: name"></button>
+                </li>
             </ul>
             <h4>4square locations<img src="http://maps.google.com/mapfiles/ms/icons/purple-dot.png"/></h4>
             <input placeholder="Search 4square locations..." type="search" data-bind="value: query, valueUpdate: 'keyup'" autocomplete="off"></input>
             <ul data-bind="foreach: computedLocations">
-                <li data-bind="click: $root.locationClickHandler,text: name"></li>
+                <li>
+                <button data-bind="click: $root.locationClickHandler,text: name"></button>
+                </li>
             </ul>
         </div>
     </div>
