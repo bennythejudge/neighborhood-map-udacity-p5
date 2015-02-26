@@ -19,7 +19,7 @@ yellow
 green
 blue
 purple
-
+10) ajax time out can be too long - make it shorter
 
 /** 
  * this is the viewModel
@@ -34,6 +34,8 @@ $(document).ready(function() {
         var self = this;
         // google maps
         var map;
+        // to set the map bounds
+        self.bounds = new google.maps.LatLngBounds();
         // one single infowindow object shared
         self.infowindow = new google.maps.InfoWindow();
         // observables
@@ -87,7 +89,7 @@ $(document).ready(function() {
             var foursquareUrl = 'https://api.foursquare.com/v2/venues/explore?' +
             'client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET +
             '&v=20150101&ll='+self.mainLocation().lat+','+self.mainLocation().lng+
-            '&query='+cat;
+             '&radius=2500' + '&query='+cat;
             var jqxr = $.getJSON(foursquareUrl)
             .fail(function(e){
                 alert('We are experiencing problems with the FourSquare interface. We apologise for the inconvenience. Please try again later');
@@ -158,6 +160,10 @@ $(document).ready(function() {
                     icon: mIcon,
                 });
                 location.marker=marker;
+                self.bounds.extend(ll);
+                console.log('before--------');
+                console.log(self.bounds);
+                console.log('before--------');
                 var url = (! location.url) ? '<p>no url</p>' : '<p>url: <a href="'  + 
                                                             location.url + 
                                                             '" target="_blank">' + 
@@ -185,6 +191,13 @@ $(document).ready(function() {
             $.each(self.computedLocations(),function(k,v){
                 showMarker(v);
             });
+            console.log('after--------');
+            console.log(self.bounds);
+            console.log(self.map);
+            console.log(self.bounds.getCenter());
+            console.log('after--------');
+            self.map.fitBounds(self.bounds);
+            self.map.setCenter(self.bounds.getCenter());
         };
         var updateMarkers = function() {
             // console.log('locations: ' + self.locations().length);
@@ -208,8 +221,13 @@ $(document).ready(function() {
                 if (v.marker && !v.visible) {
                     v.marker.setMap(self.map);
                     v.visible=true;
+                    // we need to change the bounds
+                    // 
+                    self.bounds.extend(v.marker.position);
                 }
             });
+            self.map.fitBounds(self.bounds);
+            self.map.setCenter(self.bounds.getCenter());
         };
     };   // end of the viewModel
     var vm = new viewModel();
