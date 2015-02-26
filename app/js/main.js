@@ -3,13 +3,14 @@ TODO:
 2) entries in the list of locations have the category in bracket
 ex: barbican (ben's favorites)
 6) hovering on the choices changes the color
-8) clikcing on an entry opens the infowindow and makes the marker jump
 9) add a custom control to center the map (https://developers.google.com/maps/documentation/javascript/examples/control-custom)
 10) ajax time out can be too long - make it shorter
 11) add tfl for realtime train info
 12) a media query is required for smaller screens (iphone or similar). ipad seems ok. - resize the sidebar fonts
-
-
+13) check for all possible errors and failures
+- disconnect wifi 
+- google maps (google not defined in particular)
+- 
 
 /** 
  * this is the viewModel
@@ -18,7 +19,9 @@ ex: barbican (ben's favorites)
  */
 $(document).ready(function() {
     'use strict';
-    var viewModel = function(Model,mapObject) {
+    try {
+        
+        var viewModel = function(Model,mapObject) {
         // console.log('inside viewModel');
         /** save the "this" for when the context changes */
         var self = this;
@@ -48,7 +51,7 @@ $(document).ready(function() {
         self.myLocations = ko.observableArray([
                 {cat: 'my favorites', name: 'Barbican Centre', address: 'EC2Y 8DS', city: 'london', lat: 51.5204543, lng: -0.0937136999999666, description: 'Great venue for music, cinema and exhibitions.', url: 'http://www.barbican.org.uk/', img: '', type:'my favourites',visible:true},
                 {cat: 'my favorites', name: 'Google', address: 'SW1W 9tq', city: 'london', lat: 51.49496560000001, lng: -0.14667389999999614, description: 'The Mothership', url: 'https://www.google.com', img: '', type:'my favourites',visible:true},
-                {cat: 'my favorites', name: 'Barbican Cinemas Cafe', address: 'Beech Street', city: 'london', lat: 51.5205906, lng: -0.09486970000000383, description: '<p>Besides movies of great quality from all over the world, this is also a friendly space open</p><p> to the public used by people to work, teach, learn, meet etc...</p><p>I do a lot of coding here...</p>', url: '', img: '', type:'my favourites',visible:true},
+                {cat: 'my favorites', name: 'Barbican Cinemas Cafe', address: 'Beech Street', city: 'london', lat: 51.5205906, lng: -0.09486970000000383, description: '<p>Besides showing movies of great quality from all over the world, this is also a friendly space open</p><p> to the public used by people to work, teach, learn, meet etc...</p><p>I do a lot of coding here...</p>', url: '', img: '', type:'my favourites',visible:true},
                 {cat: 'my favorites', name: 'Silicon Roundabout', address: 'EC1Y 1BE', city: 'london', lat: 51.52567029999999, lng: -0.08756149999999252, description: 'London\'s answer to Silicon Valley. Dirty, smogged, dangerous, noisy. Ugly!', url: '', img: '', type:'my favourites',visible:true},
                 {cat: 'my favorites', name: 'Shoreditch High Street station', address: 'Shoreditch High Street station', city: 'london', lat: 51.52338, lng: -0.07521999999994478, description: 'HERE BE HIPSTERS!', url: '', img: '', type:'my favourites',visible:true},
                 {cat: 'my favorites', name: 'Apple store', address: 'W1B 2EL', city: 'london', lat: 51.5142651, lng: -0.14222989999996116, description: 'First store to open in Europe in 2004', url: 'http://tinyurl.com/kwo7qnz', img: '', type:'my favourites',visible:true},
@@ -81,10 +84,16 @@ $(document).ready(function() {
             'client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET +
             '&v=20150101&ll='+self.mainLocation().lat+','+self.mainLocation().lng+
              '&radius=2500' + '&query='+cat;
-            var jqxr = $.getJSON(foursquareUrl)
+             var jqxr = $.ajax({
+               dataType: 'json',
+               url: foursquareUrl,
+               timeout: 6000
+             })
+            // var jqxr = $.getJSON(foursquareUrl)
             .fail(function(e){
                 alert('We are experiencing problems with the FourSquare interface. We apologise for the inconvenience. Please try again later');
                 console.log("error " + e);
+                pleaseShowTheMarkers();
             })
             .done(function(data){
                 // console.log(data);
@@ -121,10 +130,17 @@ $(document).ready(function() {
         });
         var showMap = function() {
             // console.log('inside showMap');
-            self.map = new google.maps.Map(document.getElementById('map-canvas'), {
-                zoom: 15,
-                center: new google.maps.LatLng(self.mainLocation().lat,self.mainLocation().lng),
-                mapTypeId: google.maps.MapTypeId.ROADMAP
+            try {
+                self.map = new google.maps.Map(document.getElementById('map-canvas'), {
+                    zoom: 15,
+                    center: new google.maps.LatLng(self.mainLocation().lat,self.mainLocation().lng),
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                });
+            } catch(e) {
+                alert('We are experiencing problems with the Google Maps interface. We apologise for the inconvenience. Please try again later');
+            };
+            google.maps.event.addListener(self.map, 'bounds_changed', function() {
+                console.log('map resized');
             });
         }();
         var pleaseShowTheMarkers = function() {
@@ -172,9 +188,10 @@ $(document).ready(function() {
                 });
                 marker.infocontent = contentString;
                 google.maps.event.addListener(marker, 'click', function() {
-                    // console.log(marker.info.content);
                     self.infowindow.setContent(marker.info.content);
                     self.infowindow.open(self.map,marker);
+                    marker.setAnimation(google.maps.Animation.BOUNCE);
+                    setTimeout(function(){ marker.setAnimation(null); }, 710);
                 });
             };
             $.each(self.myLocations(),function(k,v){
@@ -185,6 +202,9 @@ $(document).ready(function() {
             });
             self.map.fitBounds(self.bounds);
             self.map.setCenter(self.bounds.getCenter());
+        };
+        var openInfoWindow = function(marker,map) {
+            
         };
         var updateMarkers = function() {
             var diff = $(self.locations()).not(self.computedLocations()).get();
@@ -209,8 +229,14 @@ $(document).ready(function() {
         self.locationClickHandler = function(location) {
             self.infowindow.setContent(location.marker.infocontent);
             self.infowindow.open(self.map,location.marker);
+            location.marker.setAnimation(google.maps.Animation.BOUNCE);
+            setTimeout(function(){ location.marker.setAnimation(null); }, 750);
         };
     };   // end of the viewModel
     var vm = new viewModel();
     ko.applyBindings(vm);
+} catch (e) {
+    alert('error! ' + e);
+};
+    
 });
