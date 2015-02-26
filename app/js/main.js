@@ -10,7 +10,7 @@ ex: barbican (ben's favorites)
 13) check for all possible errors and failures
 - disconnect wifi 
 - google maps (google not defined in particular)
-- 
+14) give entries in the sidebar alternating colors to make them more visible
 
 /** 
  * this is the viewModel
@@ -188,10 +188,11 @@ $(document).ready(function() {
                 });
                 marker.infocontent = contentString;
                 google.maps.event.addListener(marker, 'click', function() {
-                    self.infowindow.setContent(marker.info.content);
-                    self.infowindow.open(self.map,marker);
-                    marker.setAnimation(google.maps.Animation.BOUNCE);
-                    setTimeout(function(){ marker.setAnimation(null); }, 710);
+                    openInfoWindow(marker,self.map);
+                    // self.infowindow.setContent(marker.info.content);
+                    // self.infowindow.open(self.map,marker);
+                    // marker.setAnimation(google.maps.Animation.BOUNCE);
+                    // setTimeout(function(){ marker.setAnimation(null); }, 710);
                 });
             };
             $.each(self.myLocations(),function(k,v){
@@ -204,7 +205,10 @@ $(document).ready(function() {
             self.map.setCenter(self.bounds.getCenter());
         };
         var openInfoWindow = function(marker,map) {
-            
+            self.infowindow.setContent(marker.info.content);
+            self.infowindow.open(map,marker);
+            marker.setAnimation(google.maps.Animation.BOUNCE);
+            setTimeout(function(){ marker.setAnimation(null); }, 710);
         };
         var updateMarkers = function() {
             var diff = $(self.locations()).not(self.computedLocations()).get();
@@ -227,10 +231,11 @@ $(document).ready(function() {
             self.map.setCenter(self.bounds.getCenter());
         };
         self.locationClickHandler = function(location) {
-            self.infowindow.setContent(location.marker.infocontent);
-            self.infowindow.open(self.map,location.marker);
-            location.marker.setAnimation(google.maps.Animation.BOUNCE);
-            setTimeout(function(){ location.marker.setAnimation(null); }, 750);
+            openInfoWindow(location.marker,self.map);
+            // self.infowindow.setContent(location.marker.infocontent);
+            // self.infowindow.open(self.map,location.marker);
+            // location.marker.setAnimation(google.maps.Animation.BOUNCE);
+            // setTimeout(function(){ location.marker.setAnimation(null); }, 750);
         };
     };   // end of the viewModel
     var vm = new viewModel();
