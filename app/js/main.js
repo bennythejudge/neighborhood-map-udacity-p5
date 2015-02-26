@@ -1,25 +1,15 @@
 /*
 TODO: 
-1) each category has its own marker
 2) entries in the list of locations have the category in bracket
-barbican (ben's favorites)
-3) the list of location is shown in a small window with sliding 
-4) dovrai riaffrontare il mostro dei bounds
-5) un altro mostro: centering the map
+ex: barbican (ben's favorites)
 6) hovering on the choices changes the color
-7) infowindow
 8) clikcing on an entry opens the infowindow and makes the marker jump
 9) add a custom control to center the map (https://developers.google.com/maps/documentation/javascript/examples/control-custom)
-icons:
-restaurants
-https://maps.google.com/mapfiles/kml/shapes/dining.png
-coffee.png
-large_red.png
-yellow
-green
-blue
-purple
 10) ajax time out can be too long - make it shorter
+11) add tfl for realtime train info
+12) a media query is required for smaller screens (iphone or similar). ipad seems ok. - resize the sidebar fonts
+
+
 
 /** 
  * this is the viewModel
@@ -42,7 +32,7 @@ $(document).ready(function() {
         self.errorMessage = ko.observable('All is ok!');
         // my main location in London
         self.mainLocation = ko.observable({
-            cat: 'culture', 
+            cat: 'my favorites', 
             name: 'Barbican Centre', 
             address: 'EC2Y 8DS', 
             city: 'london', 
@@ -51,21 +41,22 @@ $(document).ready(function() {
             description: 'Great venue for music, cinema and exhibitions.', 
             url: 'http://www.barbican.org.uk/', 
             img: '', 
-            type:'readonly',
+            type:'my favorites',
             visible:true,
         });
         // my favourite locations in London
         self.myLocations = ko.observableArray([
-                {cat: 'ben\'s favorites', name: 'Barbican Centre', address: 'EC2Y 8DS', city: 'london', lat: 51.5204543, lng: -0.0937136999999666, description: 'Great venue for music, cinema and exhibitions.', url: 'http://www.barbican.org.uk/', img: '', type:'readonly',visible:true},
-                {cat: 'ben\'s favorites', name: 'Google', address: 'SW1W 9tq', city: 'london', lat: 51.49496560000001, lng: -0.14667389999999614, description: 'The Mothership', url: 'https://www.google.com', img: '', type:'readonly',visible:true},
-                {cat: 'ben\'s favorites', name: 'Barbican Cinemas Cafe', address: 'Beech Street', city: 'london', lat: 51.5205906, lng: -0.09486970000000383, description: '<p>Besides movies of great quality from all over the world, this is also a friendly space open</p><p> to the public used by people to work, teach, learn, meet etc...</p><p>I do a lot of coding here...</p>', url: '', img: '', type:'readonly',visible:true},
-                {cat: 'ben\'s favorites', name: 'Silicon Roundabout', address: 'EC1Y 1BE', city: 'london', lat: 51.52567029999999, lng: -0.08756149999999252, description: 'London\'s answer to Silicon Valley. Dirty, smogged, dangerous, noisy. Ugly!', url: '', img: '', type:'readonly',visible:true},
-                {cat: 'ben\'s favorites', name: 'Shoreditch High Street station', address: 'Shoreditch High Street station', city: 'london', lat: 51.52338, lng: -0.07521999999994478, description: 'HERE BE HIPSTERS!', url: '', img: '', type:'readonly',visible:true},
-                {cat: 'ben\'s favorites', name: 'Apple store', address: 'W1B 2EL', city: 'london', lat: 51.5142651, lng: -0.14222989999996116, description: 'First store to open in Europe in 2004', url: 'http://tinyurl.com/kwo7qnz', img: '', type:'readonly',visible:true},
-                {cat: 'ben\'s favorites', name: 'Boxpark shoreditch', address: 'E1 6gy', city: 'london', lat: 51.52338109999999, lng: -0.07573070000000826, description: 'popup stores and interesting street foods. very HIP! do not come here unless you sport a modern beard', url: '', img: '', type:'readonly',visible:true},
-                {cat: 'ben\'s favorites', name: 'Silicon Milkroundabout', address: 'E1 6QL', city: 'london', lat: 51.5217064,lng:  -0.0722892999999658, description: '', url: '', img: '', type:'readonly',visible:true},
-                {cat: 'ben\'s favorites', name: 'Royal Festival Hall', address: 'SE1 8XX', city: 'london', lat: 51.5055375,lng: -0.1156066, description: '', url: '', img: '', type:'readonly',visible:true},
-                {cat: 'ben\'s favorites', name: 'London Hackspace', address: 'E2 9DY', city: 'london', lat: 51.531801,lng: -0.060318, description: 'Great space for hacking and building things.', url: 'https://london.hackspace.org.uk/', img: '', type:'readonly',visible:true},
+                {cat: 'my favorites', name: 'Barbican Centre', address: 'EC2Y 8DS', city: 'london', lat: 51.5204543, lng: -0.0937136999999666, description: 'Great venue for music, cinema and exhibitions.', url: 'http://www.barbican.org.uk/', img: '', type:'my favourites',visible:true},
+                {cat: 'my favorites', name: 'Google', address: 'SW1W 9tq', city: 'london', lat: 51.49496560000001, lng: -0.14667389999999614, description: 'The Mothership', url: 'https://www.google.com', img: '', type:'my favourites',visible:true},
+                {cat: 'my favorites', name: 'Barbican Cinemas Cafe', address: 'Beech Street', city: 'london', lat: 51.5205906, lng: -0.09486970000000383, description: '<p>Besides movies of great quality from all over the world, this is also a friendly space open</p><p> to the public used by people to work, teach, learn, meet etc...</p><p>I do a lot of coding here...</p>', url: '', img: '', type:'my favourites',visible:true},
+                {cat: 'my favorites', name: 'Silicon Roundabout', address: 'EC1Y 1BE', city: 'london', lat: 51.52567029999999, lng: -0.08756149999999252, description: 'London\'s answer to Silicon Valley. Dirty, smogged, dangerous, noisy. Ugly!', url: '', img: '', type:'my favourites',visible:true},
+                {cat: 'my favorites', name: 'Shoreditch High Street station', address: 'Shoreditch High Street station', city: 'london', lat: 51.52338, lng: -0.07521999999994478, description: 'HERE BE HIPSTERS!', url: '', img: '', type:'my favourites',visible:true},
+                {cat: 'my favorites', name: 'Apple store', address: 'W1B 2EL', city: 'london', lat: 51.5142651, lng: -0.14222989999996116, description: 'First store to open in Europe in 2004', url: 'http://tinyurl.com/kwo7qnz', img: '', type:'my favourites',visible:true},
+                {cat: 'my favorites', name: 'Boxpark shoreditch', address: 'E1 6gy', city: 'london', lat: 51.52338109999999, lng: -0.07573070000000826, description: 'popup stores and interesting street foods. very HIP! do not come here unless you sport a modern beard', url: '', img: '', type:'my favourites',visible:true},
+                {cat: 'my favorites', name: 'Silicon Milkroundabout', address: 'E1 6QL', city: 'london', lat: 51.5217064,lng:  -0.0722892999999658, description: '', url: '', img: '', type:'readonly',visible:true},
+                {cat: 'my favorites', name: 'Royal Festival Hall', address: 'SE1 8XX', city: 'london', lat: 51.5055375,lng: -0.1156066, description: '', url: '', img: '', type:'my favourites',visible:true},
+                {cat: 'my favorites', name: 'London Hackspace', address: 'E2 9DY', city: 'london', lat: 51.531801,lng: -0.060318, description: 'Great space for hacking and building things.', url: 'https://london.hackspace.org.uk/', img: '', type:'my favourites',visible:true},
+                {cat: 'my favorites', name: 'Impact Hub Westminster', address: 'SW1Y 4TE', city: 'london', lat: 51.5078348,lng: -0.1316065, description: '', url: 'http://westminster.impacthub.net/', img: '', type:'my favourites',visible:true},
         ]);
         self.typesSelection = ko.observableArray([]);
         self.foursquarecategories = ko.observable([ 'coworking']);
@@ -146,7 +137,7 @@ $(document).ready(function() {
                   location.lat,
                   location.lng
                 );
-                console.log(location.cat)
+                // console.log(location.cat)
                 if (location.cat ===  "Coworking Space") {
                     mIcon = markerpurple;
                 } else {
@@ -161,9 +152,9 @@ $(document).ready(function() {
                 });
                 location.marker=marker;
                 self.bounds.extend(ll);
-                console.log('before--------');
-                console.log(self.bounds);
-                console.log('before--------');
+                // console.log('before--------');
+                // console.log(self.bounds);
+                // console.log('before--------');
                 var url = (! location.url) ? '<p>no url</p>' : '<p>url: <a href="'  + 
                                                             location.url + 
                                                             '" target="_blank">' + 
@@ -179,11 +170,12 @@ $(document).ready(function() {
                 marker.info = new google.maps.InfoWindow({
                     content: contentString
                 });
+                marker.infocontent = contentString;
                 google.maps.event.addListener(marker, 'click', function() {
                     // console.log(marker.info.content);
                     self.infowindow.setContent(marker.info.content);
                     self.infowindow.open(self.map,marker);
-                 });
+                });
             };
             $.each(self.myLocations(),function(k,v){
                 showMarker(v);
@@ -191,23 +183,11 @@ $(document).ready(function() {
             $.each(self.computedLocations(),function(k,v){
                 showMarker(v);
             });
-            console.log('after--------');
-            console.log(self.bounds);
-            console.log(self.map);
-            console.log(self.bounds.getCenter());
-            console.log('after--------');
             self.map.fitBounds(self.bounds);
             self.map.setCenter(self.bounds.getCenter());
         };
         var updateMarkers = function() {
-            // console.log('locations: ' + self.locations().length);
-            // console.log('locations');
-            // console.log(self.locations());
-            // calculate the difference between locations and computedLocations 
-            // setMap(null) for those on locations but not on computedLocations
             var diff = $(self.locations()).not(self.computedLocations()).get();
-            // console.log('diff');
-            // console.log(diff[1]);
             $.each(diff,function(k,v){
                 if (v.visible) {
                     v.marker.setMap(null);
@@ -215,9 +195,6 @@ $(document).ready(function() {
                 }
             });
             $.each(self.computedLocations(),function(k,v){
-                // console.log('next one is 184');
-                // console.log(v);
-                // console.log(self.map);
                 if (v.marker && !v.visible) {
                     v.marker.setMap(self.map);
                     v.visible=true;
@@ -228,6 +205,10 @@ $(document).ready(function() {
             });
             self.map.fitBounds(self.bounds);
             self.map.setCenter(self.bounds.getCenter());
+        };
+        self.locationClickHandler = function(location) {
+            self.infowindow.setContent(location.marker.infocontent);
+            self.infowindow.open(self.map,location.marker);
         };
     };   // end of the viewModel
     var vm = new viewModel();
