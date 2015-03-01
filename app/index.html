@@ -12,7 +12,8 @@
 </head>
 <body>
     <div id="wrapper">
-        <div id="map-canvas"></div>
+        <div id="map-canvas">
+        </div>
         <div id="side-bar">
             <h2>My London</h2>
             <p id="header-title">by <a href="#">Benedetto Lo Giudice</a></p>
@@ -27,7 +28,7 @@
                 </li>
             </ul>
             <h4>Coworking Spaces (4Square)<img class="marker-legend" src="http://maps.google.com/mapfiles/ms/icons/purple-dot.png"/></h4>
-            <input placeholder="Search 4square locations.." type="search" data-bind="value: query, valueUpdate: 'keyup'"></input>
+            <input placeholder="Search 4square locations" type="search" data-bind="value: query, valueUpdate: 'keyup'">
             <ul data-bind="foreach: computedLocations">
                 <li>
                 <button data-bind="click: $root.locationClickHandler,text: name"></button>
@@ -39,3 +40,4 @@
     <script src="js/vendor/knockout-3.2.0.js"></script>
     <script src="js/main.js"></script>
 </body>
+</html>

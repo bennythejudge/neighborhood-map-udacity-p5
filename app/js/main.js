@@ -268,9 +268,7 @@ $(document).ready(function() {
             // IIFE
             var backgroundTask = function() {
                 var fetchData = function() {
-                    // temporary test
                     var url = 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quoteslist%20where%20symbol%3D\'%5EFTSE\'&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=';
-                    // var url = 'http://www.google.com/finance/info?q=:LSE';
                     var jqxr = $.ajax({
                         dataType: 'json',
                         type: 'GET',
