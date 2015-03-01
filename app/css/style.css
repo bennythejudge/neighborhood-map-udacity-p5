@@ -1,49 +1,47 @@
-/* TODO: sort out the responsiveness of the website */
-html { height: 100% }
-body { height: 100%; margin: 0; padding: 0 ; overflow-y: scroll; }
-#map-canvas { height: 500px }
-
-.header {
-  background: red;
-  display: block;
-}
-@media (max-height: 480px) {
-  .map-canvas {
-      height: 350px;
-      position: relative;
-  }
-/*  body {
-      font-size: 50%;
-  }
-  .ticker {
-      display: none;
-  }
+/*
+* style.css - Udacity P5 - Neighborhood map project
+* My London
+* 01/03/2015 
 */
+#map-canvas {
+    height:100%;
+    width:82%;
+    position:absolute;
+    top:0;
+    left:0;
+    z-index:0;
+    opacity:.95;
 }
-@media (max-height: 667px) and (min-height: 481px){
-  .map-canvas {
-      height: 390px;
-      position: relative;
-  }
-/*  body {
-      font-size: 60%;
-  }
-*/}
-@media (max-height: 768px) and (min-height: 668px){
-  .map-canvas {
-      height: 450px;
-      position: relative;
-  }
-/*  body {
-      font-size: 75%;
-  }
-*/}
-@media (min-height: 769px) {
-  .map-canvas {
-      height: 550px;
-      position: relative;
+#side-bar {
+    position:absolute;
+    padding:  0 0 0 5px;
+    z-index:1;
+    height: 100%;
+    width:18%;
+    right: 0;
+    top: 0;
+    overflow-y: scroll;
+    background-color: #BDC0D9;
 }
-/*  body {
-      font-size: 85%;
-  }
-*/}
+ul {
+    list-style-type: none;
+    border: 0;
+    padding: 0;
+}
+.ticker {
+    border: solid 1px;
+    background-color: #AAACB2;
+}
+@media screen and (max-width: 840px) {
+    h2, #side-bar, #header-title,#header-about,#header-subtitle, #ticker, button, #input {
+        font-size: 60%;
+        max-width:100%;
+    }
+    input {
+        max-width:100%;
+    }
+    .marker-legend {
+        width:20%;
+        height:20%;
+    }
+}

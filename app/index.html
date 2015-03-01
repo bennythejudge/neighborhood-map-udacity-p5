@@ -6,59 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="Benedetto Lo Giudice">
-    <!-- <link href="css/vendor/bootstrap.min.css" rel="stylesheet"> -->
-    <!-- <link rel="stylesheet" href="css/style.css" type="text/css"> -->
-    <!-- TODO: conferma il seguente se corretto -->
-    <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <script type="text/javascript"
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgUQ1n-me0Lb0QVVSdgHSxSGFw_pmvr9A&libraries=geometry">
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgUQ1n-me0Lb0QVVSdgHSxSGFw_pmvr9A&libraries=geometry">
     </script>
-    <style>
-        #map-canvas {
-            height:100%;
-            width:82%;
-            position:absolute;
-            top:0;
-            left:0;
-            z-index:0;
-            opacity:.95;
-        }
-        #side-bar {
-            position:absolute;
-            padding:  0 0 0 5px;
-            z-index:1;
-            height: 100%;
-            width:18%;
-            right: 0;
-            top: 0;
-            overflow-y: scroll;
-            background-color: #BDC0D9;
-        }
-        ul {
-            list-style-type: none;
-            border: 0;
-            padding: 0;
-        }
-        .ticker {
-            border: solid 1px;
-            background-color: #AAACB2;
-        }
-        @media screen and (max-width: 840px) {
-            h2, #side-bar, #header-title,#header-about,#header-subtitle, #ticker, button, #input {
-                font-size: 60%;
-                max-width:100%;
-            }
-            input {
-                max-width:100%;
-            }
-            .marker-legend {
-                width:20%;
-                height:20%;
-            }
-        }
-    </style>
 </head>
 <body>
     <div id="wrapper">
