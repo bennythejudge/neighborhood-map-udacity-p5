@@ -35,7 +35,6 @@ $(document).ready(function() {
             // infowindow can be open at any time 
             self.infowindow = new google.maps.InfoWindow();
             // observables *********************************************
-            self.errorMessage = ko.observable('All is ok!');
             // my main location in London
             self.mainLocation = ko.observable({
                 cat: 'my favorites', 
@@ -46,6 +45,28 @@ $(document).ready(function() {
                 lng: -0.0937136999999666, 
                 description: 'Great venue for music, cinema and exhibitions.', 
                 url: 'http://www.barbican.org.uk/', 
+                img: '', 
+                type:'my favorites',
+                visible:true,
+            });
+            // ftse ticker
+            self.ticker = ko.observable('Real Time FTSE Ticker');
+            ko.bindingHandlers.flash = {
+                update: function(element,valueAccessor) {
+                    ko.utils.unwrapObservable(valueAccessor());
+                    $(element).hide().fadeIn(700);
+                }
+            };
+            // lse location
+            self.lselocation = ko.observable({
+                cat: 'live data', 
+                name: 'London Stock Exchange', 
+                address: 'EC2Y 8DS', 
+                city: 'London', 
+                lat: 51.515053,
+                lng: -0.099034, 
+                description: '', 
+                url: 'http://www.londonstockexchange.com/home/homepage.htm', 
                 img: '', 
                 type:'my favorites',
                 visible:true,
@@ -82,7 +103,7 @@ $(document).ready(function() {
             // methods ==========================================================
             // get 4square data
             ko.utils.arrayForEach(self.foursquarecategories(), function(cat) {
-                console.log('now searching 4square with '+cat);
+                // console.log('now searching 4square with '+cat);
                 var CLIENT_ID='SNOQCJIS13MCJ0IWGDEUNKLZGPVY5MQVSPNFF0Z1CXMV5MH2';
                 var CLIENT_SECRET='Z2PFXOJSYNMAU5XIM41HFD4TKHA0KRICYUPI3W0ZQVZFNPW3';
                 var foursquareUrl = 'https://api.foursquare.com/v2/venues/explore?' +
@@ -149,9 +170,9 @@ $(document).ready(function() {
                 /**
                 * THIS ONE NEEDS SOME ATTENTION ***************
                 */
-                google.maps.event.addListener(self.map, 'bounds_changed', function() {
-                    console.log('map resized');
-                });
+                // google.maps.event.addListener(self.map, 'bounds_changed', function() {
+                //     console.log('map resized');
+                // });
                 /**
                 * THIS ONE NEEDS SOME ATTENTION ***************
                 */
@@ -189,14 +210,15 @@ $(document).ready(function() {
                                                                 '" target="_blank">' + 
                                                                 location.url + 
                                                                 '<a></p>';
-                    var contentString = '<div id="content">' + 
+                    var contentString = '<div id="infowindow">' + 
                         '<p>'+ location.name + '</p>' +
                         '<p>' + location.cat + '</p>' +
                         url +
                         '<p>'+ location.description + '</p>' +
                         '</div>';
                     marker.info = new google.maps.InfoWindow({
-                        content: contentString
+                        content: contentString,
+                        maxWidth: 274,
                     });
                     marker.infocontent = contentString;
                     google.maps.event.addListener(marker, 'click', function() {
@@ -240,6 +262,32 @@ $(document).ready(function() {
             self.locationClickHandler = function(location) {
                 openInfoWindow(location.marker,self.map);
             };
+            // IIFE
+            var backgroundTask = function() {
+                var fetchData = function() {
+                    // temporary test
+                    var url = 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quoteslist%20where%20symbol%3D\'%5EFTSE\'&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=';
+                    // var url = 'http://www.google.com/finance/info?q=:LSE';
+                    var jqxr = $.ajax({
+                        dataType: 'json',
+                        type: 'GET',
+                        url: url,
+                        timeout: 6000,
+                    })
+                    .fail(function(e){
+                       alert('We are experiencing problems with the Yahoo interface. We apologise for the inconvenience. Please try again later');
+                   })
+                   .done(function(data){
+                       // show ticker
+                       // console.log(data);
+                       // console.log(self.map);
+                       self.ticker('FTSE: ' + data.query.results.quote.LastTradePriceOnly + ' '+ data.query.results.quote.LastTradeTime);
+                       // simulate change using random numbers
+                       // self.ticker('FTSE: ' + Math.floor((Math.random() * 10) + 1)*1000000);
+                    });
+                };
+                setInterval(fetchData,10000);
+            }();
         };   // end of the viewModel
         var vm = new viewModel();
         ko.applyBindings(vm);

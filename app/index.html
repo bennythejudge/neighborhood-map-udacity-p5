@@ -16,6 +16,15 @@
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgUQ1n-me0Lb0QVVSdgHSxSGFw_pmvr9A&libraries=geometry">
     </script>
     <style>
+        @media (max-width: 400px) {
+            * {
+                font-size: 10%;
+            }
+            #map-canvas {
+                font-size: 10%;
+                line-height:normal;
+            }
+        }
         #map-canvas {
             height:100%;
             width:82%;
@@ -41,7 +50,22 @@
             border: 0;
             padding: 0;
         }
-    </style>
+        .ticker {
+            border: solid 1px;
+            background-color: #AAACB2;
+        }
+/*        .ticker {
+            -moz-transition: all .9s ease-in;
+            -o-transition: all .9s ease-in;
+            -webkit-transition: all .9s ease-in;
+            transition: all .7s ease-in;
+            background: white;
+            padding: 0.09em;
+        }
+        .ticker:hover {
+            background: grey;
+        }
+*/    </style>
 </head>
 <body>
     <div id="wrapper">
@@ -49,7 +73,9 @@
         <div id="side-bar">
             <h2>London4Geeks</h2>
             <p>by <a href="#">Benedetto Lo Giudice</a></p>
+            <p><a href="#">About</a></p>
             <p>Udacity Front-end Nanodegree Project 5</p>
+            <p data-bind="text: ticker,flash: ticker" class="ticker"></p>
             <h3>Locations</h3>
             <h4>My Locations<img src="http://maps.google.com/mapfiles/ms/icons/green-dot.png"/></h4>
             <ul data-bind="foreach: myLocations">
