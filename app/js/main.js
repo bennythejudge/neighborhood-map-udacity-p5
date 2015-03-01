@@ -4,7 +4,6 @@ TODO:
 ex: barbican (ben's favorites)
 6) hovering on the choices changes the color
 9) add a custom control to center the map (https://developers.google.com/maps/documentation/javascript/examples/control-custom)
-11) add tfl for realtime train info
 12) a media query is required for smaller screens (iphone or similar). ipad seems ok. - resize the sidebar fonts
 13) check for all possible errors and failures
 - disconnect wifi 
@@ -15,6 +14,10 @@ ex: barbican (ben's favorites)
 - clicking
 - dragging the map
 ????
+16) the infowindow is not working for small screen 320x480 sembra che si veda solo a partire da 401 x anything?
+17) must change format for smallerscrens
+18) keep the map centered and within the bounds as it is resized
+
 
 /** 
  * this is the viewModel

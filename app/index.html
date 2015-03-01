@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Neighborhood map</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="Benedetto Lo Giudice">
     <!-- <link href="css/vendor/bootstrap.min.css" rel="stylesheet"> -->
@@ -16,80 +16,135 @@
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgUQ1n-me0Lb0QVVSdgHSxSGFw_pmvr9A&libraries=geometry">
     </script>
     <style>
+        @media (min-width: 900px) {
+            #map-canvas {
+                height:100%;
+                width:82%;
+                position:absolute;
+                top:0;
+                left:0;
+                z-index:0;
+                opacity:.95;
+            }
+            #side-bar {
+                position:absolute;
+                padding:  0 0 0 5px;
+                z-index:1;
+                height: 100%;
+                width:18%;
+                right: 0;
+                top: 0;
+                overflow-y: scroll;
+                background-color: #BDC0D9;
+            }
+            ul {
+                list-style-type: none;
+                border: 0;
+                padding: 0;
+            }
+            .ticker {
+                border: solid 1px;
+                background-color: #AAACB2;
+            }
+        }
         @media (max-width: 400px) {
-            * {
-                font-size: 10%;
+            #header-title,#header-about, #section-title,#header-subtitle {
+                display: none;
+            }
+            button {
+                font-size:8px;
             }
             #map-canvas {
+                height: 200px;
+                width: 100%;
+                top:0;
+                left:0;
+                z-index:0;
+                opacity:.95;
+            }
+            #side-bar {
                 font-size: 10%;
-                line-height:normal;
+                width: 100%;
+                padding:  0 0 0 5px;
+                z-index:1;
+                right: 0;
+                top: 0;
+                overflow-y: scroll;
+                background-color: rgba(156, 157, 193, 0.62);
+            }
+            body { 
+                background: #333;
+            }
+            nav ul{overflow:hidden; overflow-y:scroll;}
+            nav ul{height:80px; }
+            .marker-legend {
+                max-width: 15px;
             }
         }
-        #map-canvas {
-            height:100%;
-            width:82%;
-            position:absolute;
-            top:0;
-            left:0;
-            z-index:0;
-            opacity:.95;
+        @media (min-width: 401px) and (max-width:899px) {
+            * { 
+                font-size: 40%;
+            }
+            #map-canvas {
+                height: 100%;
+                width:82%;
+                position:absolute;
+                top:0;
+                left:0;
+                z-index:0;
+                opacity:.95;
+            }
+            #side-bar {
+                height: 100%;
+                position:absolute;
+                padding:  0 0 0 5px;
+                z-index:1;
+                width:18%;
+                right: 0;
+                top: 0;
+                overflow-y: scroll;
+                background-color: #BDC0D8;
+            }
+            ul {
+                font-size:10%;
+                list-style-type: none;
+                border: 0;
+                padding: 0;
+            }
+            .ticker {
+                border: solid 1px;
+                background-color: #AAACB2;
+            }
         }
-        #side-bar {
-            position:absolute;
-            padding:  0 0 0 5px;
-            z-index:1;
-            height: 100%;
-            width:18%;
-            right: 0;
-            top: 0;
-            overflow-y: scroll;
-            background-color: #BDC0D9;
-        }
-        ul {
-            list-style-type: none;
-            border: 0;
-            padding: 0;
-        }
-        .ticker {
-            border: solid 1px;
-            background-color: #AAACB2;
-        }
-/*        .ticker {
-            -moz-transition: all .9s ease-in;
-            -o-transition: all .9s ease-in;
-            -webkit-transition: all .9s ease-in;
-            transition: all .7s ease-in;
-            background: white;
-            padding: 0.09em;
-        }
-        .ticker:hover {
-            background: grey;
-        }
-*/    </style>
+    </style>
 </head>
 <body>
     <div id="wrapper">
         <div id="map-canvas"></div>
         <div id="side-bar">
             <h2>London4Geeks</h2>
-            <p>by <a href="#">Benedetto Lo Giudice</a></p>
-            <p><a href="#">About</a></p>
-            <p>Udacity Front-end Nanodegree Project 5</p>
+            <p id="header-title">by <a href="#">Benedetto Lo Giudice</a></p>
+            <p id="header-about"><a href="#">About</a></p>
+            <p id="header-subtitle">Udacity Front-end Nanodegree Project 5</p>
             <p data-bind="text: ticker,flash: ticker" class="ticker"></p>
-            <h3>Locations</h3>
-            <h4>My Locations<img src="http://maps.google.com/mapfiles/ms/icons/green-dot.png"/></h4>
-            <ul data-bind="foreach: myLocations">
-                <li>
-                    <button data-bind="click: $root.locationClickHandler,text: name"></button>
-                </li>
-            </ul>
-            <h4>4square locations<img src="http://maps.google.com/mapfiles/ms/icons/purple-dot.png"/></h4>
+            <h3 id="section-title">Locations</h3>
+            <h4>My Locations<img class="marker-legend" src="http://maps.google.com/mapfiles/ms/icons/green-dot.png"/></h4>
+            <nav>
+                <ul data-bind="foreach: myLocations">
+                    <li>
+                        <button data-bind="click: $root.locationClickHandler,text: name"></button>
+                    </li>
+                </ul>
+            </nav>
+            <h4>4square locations<img class="marker-legend" src="http://maps.google.com/mapfiles/ms/icons/purple-dot.png"/></h4>
             <input placeholder="Search 4square locations..." type="search" data-bind="value: query, valueUpdate: 'keyup'" autocomplete="off"></input>
-            <ul data-bind="foreach: computedLocations">
-                <li>
-                <button data-bind="click: $root.locationClickHandler,text: name"></button>
-                </li>
-            </ul>
+            <nav>
+                <ul data-bind="foreach: computedLocations">
+                    <li>
+                    <button data-bind="click: $root.locationClickHandler,text: name"></button>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
     <script src="js/vendor/jquery.min.js"></script>
