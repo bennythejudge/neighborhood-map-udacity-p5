@@ -1,10 +1,7 @@
 /*
 TODO: 
-2) entries in the list of locations have the category in bracket
-ex: barbican (ben's favorites)
 6) hovering on the choices changes the color
 9) add a custom control to center the map (https://developers.google.com/maps/documentation/javascript/examples/control-custom)
-12) a media query is required for smaller screens (iphone or similar). ipad seems ok. - resize the sidebar fonts
 13) check for all possible errors and failures
 - disconnect wifi 
 - google maps (google not defined in particular)
@@ -14,31 +11,31 @@ ex: barbican (ben's favorites)
 - clicking
 - dragging the map
 ????
-16) the infowindow is not working for small screen 320x480 sembra che si veda solo a partire da 401 x anything?
-17) must change format for smallerscrens
-18) keep the map centered and within the bounds as it is resized
+*/ 
 
-
-/** 
- * this is the viewModel
- * defined EVERYTHING inside here: methods, both public and private
- * callback functions, observable, global variables etc.
- */
 $(document).ready(function() {
     'use strict';
+    /** catch any error */
     try {
-            var viewModel = function(Model,mapObject) {
-            // save the "this" for when the context changes
+        /**
+         * Knockout viewModel
+         * @class viewModel
+         */
+        var viewModel = function(Model,mapObject) {
+            /**  save the "this" for when the context changes */
             var self = this;
-            // google maps
             var map;
-            // array to set the map bounds
+            /** array to set the map bounds */
             self.bounds = new google.maps.LatLngBounds();
-            // one single infowindow object shared, so that only one
-            // infowindow can be open at any time 
+            /**
+             * use one single infowindow object, so that only one
+             * infowindow can be open at any given time
+             */
             self.infowindow = new google.maps.InfoWindow();
-            // observables *********************************************
-            // my main location in London
+            /** 
+             * knockouts observables 
+             */
+            /** my main location in London */
             self.mainLocation = ko.observable({
                 cat: 'my favorites', 
                 name: 'Barbican Centre', 
@@ -52,29 +49,18 @@ $(document).ready(function() {
                 type:'my favorites',
                 visible:true,
             });
-            // ftse ticker
+            /** for the FTSE ticker */
             self.ticker = ko.observable('Real Time FTSE Ticker');
+            /** to flash the ticker on the HTML page when it's updated */
             ko.bindingHandlers.flash = {
                 update: function(element,valueAccessor) {
                     ko.utils.unwrapObservable(valueAccessor());
                     $(element).hide().fadeIn(700);
                 }
             };
-            // lse location
-            self.lselocation = ko.observable({
-                cat: 'live data', 
-                name: 'London Stock Exchange', 
-                address: 'EC2Y 8DS', 
-                city: 'London', 
-                lat: 51.515053,
-                lng: -0.099034, 
-                description: '', 
-                url: 'http://www.londonstockexchange.com/home/homepage.htm', 
-                img: '', 
-                type:'my favorites',
-                visible:true,
-            });
-            // my favourite locations in London
+            /**
+             * my favourite locations in London
+             */
             self.myLocations = ko.observableArray([
                     {cat: 'my favorites', name: 'Barbican Centre', address: 'EC2Y 8DS', city: 'london', lat: 51.5204543, lng: -0.0937136999999666, description: 'Great venue for music, cinema and exhibitions.', url: 'http://www.barbican.org.uk/', img: '', type:'my favourites',visible:true},
                     {cat: 'my favorites', name: 'Google', address: 'SW1W 9tq', city: 'london', lat: 51.49496560000001, lng: -0.14667389999999614, description: 'The Mothership', url: 'https://www.google.com', img: '', type:'my favourites',visible:true},
@@ -88,13 +74,10 @@ $(document).ready(function() {
                     {cat: 'my favorites', name: 'London Hackspace', address: 'E2 9DY', city: 'london', lat: 51.531801,lng: -0.060318, description: 'Great space for hacking and building things.', url: 'https://london.hackspace.org.uk/', img: '', type:'my favourites',visible:true},
                     {cat: 'my favorites', name: 'Impact Hub Westminster', address: 'SW1Y 4TE', city: 'london', lat: 51.5078348,lng: -0.1316065, description: '', url: 'http://westminster.impacthub.net/', img: '', type:'my favourites',visible:true},
             ]);
-            self.typesSelection = ko.observableArray([]);
-            self.foursquarecategories = ko.observable([ 'coworking']);
-            // 4square locations
+            /** category to search in 4square */
+            self.searchcategory = 'coworking';
+            /** 4square locations */
             self.locations = ko.observableArray();
-            self.locations.subscribe(function(value){
-            
-            })
             self.query = ko.observable('');
             self.computedLocations = ko.computed(function(){
                 return ko.utils.arrayFilter(self.locations(), function(entry){
@@ -102,61 +85,57 @@ $(document).ready(function() {
                     return entry.name.toLowerCase().indexOf(self.query().toLowerCase()) >= 0;
                 })
             });
-            // observables *********************************************
-            // methods ==========================================================
-            // get 4square data
-            ko.utils.arrayForEach(self.foursquarecategories(), function(cat) {
-                // console.log('now searching 4square with '+cat);
-                var CLIENT_ID='SNOQCJIS13MCJ0IWGDEUNKLZGPVY5MQVSPNFF0Z1CXMV5MH2';
-                var CLIENT_SECRET='Z2PFXOJSYNMAU5XIM41HFD4TKHA0KRICYUPI3W0ZQVZFNPW3';
-                var foursquareUrl = 'https://api.foursquare.com/v2/venues/explore?' +
-                'client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET +
-                '&v=20150101&ll='+self.mainLocation().lat+','+self.mainLocation().lng+
-                 '&radius=2500' + '&query='+cat;
-                 // using ajax instead of getJSON (which is a wrapper anyway) so that
-                 // I can set a timeout
-                 var jqxr = $.ajax({
-                   dataType: 'json',
-                   url: foursquareUrl,
-                   timeout: 6000
-                 })
-                 .fail(function(e){
-                    alert('We are experiencing problems with the FourSquare interface. We apologise for the inconvenience. Please try again later');
-                    // console.log("error " + e);
-                    // we still have the local data, so show it
-                    pleaseShowTheMarkers();
-                })
-                .done(function(data){
-                    // console.log(data);
-                    // console.log(self.locations());
-                    // console.log(data);
-                    $.each(data.response.groups['0'].items, function(k,v){
-                        // console.log(v);
-                        var loc = {
-                            cat:v.venue.categories['0'].name,
-                            name: v.venue.name,
-                            address: v.venue.location.address,
-                            city: v.venue.location.city+' '+v.venue.location.country,
-                            lat: v.venue.location.lat,
-                            lng: v.venue.location.lng,
-                            description: '',
-                            url: v.venue.url,
-                            img: '',
-                            type:'foursquare',
-                            visible: true,
-                            marker: {},
-                        
-                        };
-                        // console.log(loc);
-                        // pleaseHandleThisDisaster(loc);
-                        self.locations.push(loc);
-                    });
-                    pleaseShowTheMarkers();
-                    self.computedLocations.subscribe(function(value){
-                        // console.log('computed has changed');
-                        // console.log(self.computedLocations());
-                        updateMarkers();
-                    });
+            /**
+             * get 4square data for the category of choice
+             */
+            var CLIENT_ID='SNOQCJIS13MCJ0IWGDEUNKLZGPVY5MQVSPNFF0Z1CXMV5MH2';
+            var CLIENT_SECRET='Z2PFXOJSYNMAU5XIM41HFD4TKHA0KRICYUPI3W0ZQVZFNPW3';
+            var foursquareUrl = 'https://api.foursquare.com/v2/venues/explore?' +
+            'client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET +
+            '&v=20150101&ll='+self.mainLocation().lat+','+self.mainLocation().lng+
+             '&radius=2500' + '&query='+self.searchcategory;
+             // using ajax instead of getJSON (which is a wrapper anyway) so that
+             // I can set a timeout
+             var jqxr = $.ajax({
+               dataType: 'json',
+               url: foursquareUrl,
+               timeout: 6000
+             })
+             .fail(function(e){
+                alert('We are experiencing problems with the FourSquare interface. We apologise for the inconvenience. Please try again later');
+                // console.log("error " + e);
+                // we still have the local data, so show it
+                pleaseShowTheMarkers();
+             })
+             .done(function(data){
+                // console.log(data);
+                // console.log(self.locations());
+                // console.log(data);
+                $.each(data.response.groups['0'].items, function(k,v){
+                    // console.log(v);
+                    var loc = {
+                        cat:v.venue.categories['0'].name,
+                        name: v.venue.name,
+                        address: v.venue.location.address,
+                        city: v.venue.location.city+' '+v.venue.location.country,
+                        lat: v.venue.location.lat,
+                        lng: v.venue.location.lng,
+                        description: '',
+                        url: v.venue.url,
+                        img: '',
+                        type:'foursquare',
+                        visible: true,
+                        marker: {},
+                    };
+                    // console.log(loc);
+                    // pleaseHandleThisDisaster(loc);
+                    self.locations.push(loc);
+                });
+                pleaseShowTheMarkers();
+                self.computedLocations.subscribe(function(value){
+                    // console.log('computed has changed');
+                    // console.log(self.computedLocations());
+                    updateMarkers();
                 });
             });
             var showMap = function() {
@@ -173,12 +152,11 @@ $(document).ready(function() {
                 /**
                 * THIS ONE NEEDS SOME ATTENTION ***************
                 */
-                // google.maps.event.addListener(self.map, 'bounds_changed', function() {
-                //     console.log('map resized');
-                // });
-                /**
-                * THIS ONE NEEDS SOME ATTENTION ***************
-                */
+                // event handler for window resize
+                google.maps.event.addDomListener(window, "resize", function() {
+                     self.map.fitBounds(self.bounds);
+                     self.map.setCenter(self.bounds.getCenter());
+                });
             }(); // end showMap
             var pleaseShowTheMarkers = function() {
                 var showMarker = function(location) {
@@ -205,19 +183,15 @@ $(document).ready(function() {
                     });
                     location.marker=marker;
                     self.bounds.extend(ll);
-                    // console.log('before--------');
-                    // console.log(self.bounds);
-                    // console.log('before--------');
                     var url = (! location.url) ? '<p>no url</p>' : '<p><a href="'  + 
                                                                 location.url + 
                                                                 '" target="_blank">' + 
                                                                 location.url + 
                                                                 '<a></p>';
                     var contentString = '<div id="infowindow">' + 
-                        '<p>'+ location.name + '</p>' +
+                        '<p>'+ location.name + '</p>' + 
                         '<p>' + location.cat + '</p>' +
-                        url +
-                        '<p>'+ location.description + '</p>' +
+                        url + '<p>'+ location.description + '</p>' +
                         '</div>';
                     marker.info = new google.maps.InfoWindow({
                         content: contentString,
@@ -265,8 +239,17 @@ $(document).ready(function() {
             self.locationClickHandler = function(location) {
                 openInfoWindow(location.marker,self.map);
             };
-            // IIFE
+            /**
+             * Fetch the FTSE quote in real time from Yahoo using a timer
+             * This is a IIFE so that it will be immediately executed the first time the viewModel
+             * is executed
+             * @function backgroundTask
+             */
             var backgroundTask = function() {
+                /** 
+                 * this function implements the ajax call to fetch data from Yahoo
+                 * @function fetchData 
+                */
                 var fetchData = function() {
                     var url = 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quoteslist%20where%20symbol%3D\'%5EFTSE\'&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=';
                     var jqxr = $.ajax({
@@ -279,15 +262,15 @@ $(document).ready(function() {
                        alert('We are experiencing problems with the Yahoo interface. We apologise for the inconvenience. Please try again later');
                    })
                    .done(function(data){
-                       // show ticker
                        // console.log(data);
                        // console.log(self.map);
                        self.ticker('FTSE: ' + data.query.results.quote.LastTradePriceOnly + ' '+ data.query.results.quote.LastTradeTime);
-                       // simulate change using random numbers
+                       // simulate change using random numbers - when the FTSE index is not changing
                        // self.ticker('FTSE: ' + Math.floor((Math.random() * 10) + 1)*1000000);
                     });
                 };
-                setInterval(fetchData,10000);
+                /** creates a timer to call fetchData every x seconds */
+                setInterval(fetchData,30000);
             }();
         };   // end of the viewModel
         var vm = new viewModel();
