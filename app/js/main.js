@@ -1,3 +1,8 @@
+/**
+ * Udacity - FEND - Project 5 - Neighborhood Map
+ * @author Benedetto Lo Giudice
+ * Jan/Feb/March 2015
+ */
 /*
 TODO: 
 6) hovering on the choices changes the color
@@ -12,7 +17,6 @@ TODO:
 - dragging the map
 ????
 */ 
-
 $(document).ready(function() {
     'use strict';
     /** catch any error */
@@ -78,7 +82,9 @@ $(document).ready(function() {
             self.searchcategory = 'coworking';
             /** 4square locations */
             self.locations = ko.observableArray();
+            /** observable used to implement the search */
             self.query = ko.observable('');
+            /** this computed observable is used to implement the search */
             self.computedLocations = ko.computed(function(){
                 return ko.utils.arrayFilter(self.locations(), function(entry){
                     // console.log('inside computed filter >'+self.query()+'< >'+entry.name);
@@ -104,7 +110,7 @@ $(document).ready(function() {
              .fail(function(e){
                 alert('We are experiencing problems with the FourSquare interface. We apologise for the inconvenience. Please try again later');
                 // console.log("error " + e);
-                // we still have the local data, so show it
+                /** even if 4square API fails, we still have the local data, so show it */
                 pleaseShowTheMarkers();
              })
              .done(function(data){
@@ -128,21 +134,26 @@ $(document).ready(function() {
                         marker: {},
                     };
                     // console.log(loc);
-                    // pleaseHandleThisDisaster(loc);
                     self.locations.push(loc);
                 });
                 pleaseShowTheMarkers();
+                /** use the subscribe to refresh the markers everytime the observable changes */
                 self.computedLocations.subscribe(function(value){
                     // console.log('computed has changed');
                     // console.log(self.computedLocations());
                     updateMarkers();
                 });
             });
+            /**
+             * Shows the google map
+             * @function showMap
+             */
             var showMap = function() {
-                // console.log('inside showMap');
+                /** catch errors if any */
                 try {
                     self.map = new google.maps.Map(document.getElementById('map-canvas'), {
                         zoom: 15,
+                        streetViewControl: false,
                         center: new google.maps.LatLng(self.mainLocation().lat,self.mainLocation().lng),
                         mapTypeId: google.maps.MapTypeId.ROADMAP
                     });
@@ -150,14 +161,18 @@ $(document).ready(function() {
                     alert('We are experiencing problems with the Google Maps interface. We apologise for the inconvenience. Please try again later');
                 };
                 /**
-                * THIS ONE NEEDS SOME ATTENTION ***************
-                */
-                // event handler for window resize
+                 * event handler for window resize to re-centerand re-fitBounds 
+                 */
                 google.maps.event.addDomListener(window, "resize", function() {
                      self.map.fitBounds(self.bounds);
                      self.map.setCenter(self.bounds.getCenter());
                 });
             }(); // end showMap
+            /**
+             * the rather unusual name is the result of the frustration that this function has caused me
+             * shows the markers - both the static myfavourites and the locations found on 4square
+             * function @pleaseShowTheMarkers
+             */
             var pleaseShowTheMarkers = function() {
                 var showMarker = function(location) {
                     var markergreen = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png';
@@ -168,7 +183,6 @@ $(document).ready(function() {
                       location.lat,
                       location.lng
                     );
-                    // console.log(location.cat)
                     if (location.cat ===  "Coworking Space") {
                         mIcon = markerpurple;
                     } else {
@@ -182,41 +196,59 @@ $(document).ready(function() {
                         icon: mIcon,
                     });
                     location.marker=marker;
+                    /** add marker to the bounds */
                     self.bounds.extend(ll);
+                    /** prepare the infowindow content: is there a url? */
                     var url = (! location.url) ? '<p>no url</p>' : '<p><a href="'  + 
-                                                                location.url + 
-                                                                '" target="_blank">' + 
-                                                                location.url + 
-                                                                '<a></p>';
+                                location.url + '" target="_blank">' + location.url + 
+                                '<a></p>';
+                    /** assemble the infowindow content */
                     var contentString = '<div id="infowindow">' + 
                         '<p>'+ location.name + '</p>' + 
                         '<p>' + location.cat + '</p>' +
                         url + '<p>'+ location.description + '</p>' +
                         '</div>';
+                    /** create the infowindow */
                     marker.info = new google.maps.InfoWindow({
                         content: contentString,
                         maxWidth: 274,
                     });
+                    /** assign the content to the infowindow */
                     marker.infocontent = contentString;
+                    /** hook up this marker with a event handler for click */
                     google.maps.event.addListener(marker, 'click', function() {
                         openInfoWindow(marker,self.map);
                     });
                 }; 
+                /** show all my favourites locations' markers */
                 $.each(self.myLocations(),function(k,v){
                     showMarker(v);
                 });
+                /** show 4square locations' markers */
                 $.each(self.computedLocations(),function(k,v){
                     showMarker(v);
                 });
+                /** fit the map to the markers and center it */
                 self.map.fitBounds(self.bounds);
                 self.map.setCenter(self.bounds.getCenter());
             }; // end pleaseShowTheMarkers()
+            /** 
+             * handles requests to open a infowindow
+             * we use a single infowindow to have max 1 infowindow open at each time
+             * make the marker bounce once only
+             * 710 seems to be just the right time to make the marker bounce once only
+             * @function openInfoWindow
+             */
             var openInfoWindow = function(marker,map) {
                 self.infowindow.setContent(marker.info.content);
                 self.infowindow.open(map,marker);
                 marker.setAnimation(google.maps.Animation.BOUNCE);
                 setTimeout(function(){ marker.setAnimation(null); }, 710);
             };
+            /**
+             * this function updates the markers
+             * function @updateMarkers
+             */
             var updateMarkers = function() {
                 var diff = $(self.locations()).not(self.computedLocations()).get();
                 $.each(diff,function(k,v){
@@ -236,6 +268,7 @@ $(document).ready(function() {
                 self.map.fitBounds(self.bounds);
                 self.map.setCenter(self.bounds.getCenter());
             };
+            /** this is the event handler for clicks on marker - to open infowindows */
             self.locationClickHandler = function(location) {
                 openInfoWindow(location.marker,self.map);
             };
@@ -270,7 +303,7 @@ $(document).ready(function() {
                     });
                 };
                 /** creates a timer to call fetchData every x seconds */
-                setInterval(fetchData,30000);
+                setInterval(fetchData,15000);
             }();
         };   // end of the viewModel
         var vm = new viewModel();
