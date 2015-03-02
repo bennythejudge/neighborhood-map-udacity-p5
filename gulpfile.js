@@ -8,6 +8,11 @@ var runSequence = require('run-sequence');
 var browserSync = require('browser-sync');
 var pagespeed = require('psi');
 var reload = browserSync.reload;
+// added by me
+var notify = require('gulp-notify');
+var jscs = require('gulp-jscs');
+var jshint = require('gulp-jshint');
+
 
 var AUTOPREFIXER_BROWSERS = [
   'ie >= 10',
@@ -24,10 +29,18 @@ var AUTOPREFIXER_BROWSERS = [
 // Lint JavaScript
 gulp.task('jshint', function () {
   return gulp.src('app/js/*.js')
-    .pipe(reload({stream: true, once: true}))
-    .pipe($.jshint())
-    .pipe($.jshint.reporter('jshint-stylish'))
-    .pipe($.if(!browserSync.active, $.jshint.reporter('fail')));
+    .pipe(jshint())
+    .pipe(jshint.reporter('jshint-stylish'))
+});
+
+// JSCS the javascript
+gulp.task('jscs', function() {
+    gulp.src('app/js/*.js')
+        .pipe(jscs())
+        .pipe(notify({
+            title: 'JSCS',
+            message: 'JSCS Passed. Let it fly!'
+    }))
 });
 
 // Optimize Images
@@ -45,7 +58,7 @@ gulp.task('jshint', function () {
 // Watch Files For Changes & Reload
 gulp.task('serve', function () {
   browserSync({
-    notify: false,
+    notify: true,
     // Run as an https by uncommenting 'https: true'
     // Note: this uses an unsigned certificate which on first access
     //       will present a certificate warning in the browser.
@@ -54,9 +67,8 @@ gulp.task('serve', function () {
   });
 
   gulp.watch(['app/*.html'], reload);
-  gulp.watch(['app/css/*.{scss,css}'], [reload]);
+  gulp.watch(['app/css/*.css'], [reload]);
   gulp.watch(['app/js/*.js'], ['jshint',reload]);
-  // gulp.watch(['app/img/**/*'], reload);
 });
 
 // // Build Production Files, the Default Task
