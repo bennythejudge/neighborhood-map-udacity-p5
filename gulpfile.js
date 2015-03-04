@@ -15,6 +15,8 @@ var rename = require('gulp-rename');
 var runSequence = require('run-sequence');
 var size = require('gulp-size');
 var uglify = require('gulp-uglify');
+var minifyHTML = require('gulp-minify-html');
+var minifyCSS = require('gulp-minify-css');
 var pkg = require('./package.json');
 
 
@@ -47,26 +49,10 @@ gulp.task('jscs', function() {
     }))
 });
 
-// Optimize Images
-// gulp.task('images', function () {
-//   return gulp.src('app/img/**/*')
-//     .pipe($.cache($.imagemin({
-//       progressive: true,
-//       interlaced: true
-//     })))
-//     .pipe(gulp.dest('dist/images'))
-//     .pipe($.size({title: 'images'}));
-// });
-
-
 // Watch Files For Changes & Reload
 gulp.task('serve', function () {
   browserSync({
     notify: true,
-    // Run as an https by uncommenting 'https: true'
-    // Note: this uses an unsigned certificate which on first access
-    //       will present a certificate warning in the browser.
-    // https: true,
     server: ['.tmp', 'app']
   });
 
@@ -76,15 +62,30 @@ gulp.task('serve', function () {
 });
 
 /**
- * build a production ready distribution
+ * build a production ready distribution of the js
+ * html, css
  */
-gulp.task('build', function () {
+gulp.task('minify-js', function () {
   return gulp.src('./app/js/*.js')
-    .pipe(concat(pkg.name + '.js'))
-    .pipe(gulp.dest('./dist/js'))
-    .pipe(rename(pkg.name + '.min.js'))
     .pipe(uglify())
     .pipe(size())
     .pipe(gulp.dest('./dist/js'));
 });
 
+gulp.task('minify-html', function() {
+  var opts = {
+      conditionals: true,
+      spare:true,
+  };
+  return gulp.src('./app/*.html')
+    .pipe(minifyHTML(opts))
+    .pipe(gulp.dest('./dist/'));
+});
+
+/** build */
+gulp.task('minify-css', function() {
+  return gulp.src('./app/css/*.css')
+    .pipe(minifyCSS({keepBreaks:false}))
+    .pipe(gulp.dest('./dist/css'))
+});
+gulp.task('build', ['minify-html', 'minify-css', 'minify-js']);

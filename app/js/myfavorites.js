@@ -35,7 +35,7 @@ var myfavs = [
         description: '<p>Besides showing movies of great quality from all over the world, this is also a friendly ' +
         'space open</p><p> to the public used by people to work, teach, learn, meet etc...</p><p>I do a lot of ' +
         'coding here...</p>',
-        url: '',
+        url: 'http://www.barbican.org.uk/',
         img: '',
         type:'my favourites',
         visible:true
@@ -87,7 +87,7 @@ var myfavs = [
         lng: -0.07573070000000826,
         description: 'popup stores and interesting street foods. very HIP! do not come here unless you sport a ' +
         'modern beard',
-        url: '',
+        url: 'http://www.boxpark.co.uk/',
         img: '',
         type:'my favourites',
         visible:true
@@ -100,7 +100,7 @@ var myfavs = [
         lat: 51.5217064,
         lng:  -0.0722892999999658,
         description: '',
-        url: '',
+        url: 'https://www.siliconmilkroundabout.com/',
         img: '',
         type:'readonly',
         visible:true
@@ -113,7 +113,7 @@ var myfavs = [
         lat: 51.5055375,
         lng: -0.1156066,
         description: '',
-        url: '',
+        url: 'http://www.southbankcentre.co.uk/',
         img: '',
         type:'my favourites',
         visible:true
