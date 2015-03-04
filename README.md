@@ -3,9 +3,9 @@
 ### by Benedetto Lo Giudice
 
 ###### To execute locally
-git clone git@github.com:bennythejudge/neighborhood-map-udacity-p5.git
-cd neighborhood-map-udacity-p5/
-gulp serve
+    git clone git@github.com:bennythejudge/neighborhood-map-udacity-p5.git
+    cd neighborhood-map-udacity-p5/
+    gulp serve
 (this will launch automatically your default browser)
 Using Google Chrome, open http://localhost:3000
 
