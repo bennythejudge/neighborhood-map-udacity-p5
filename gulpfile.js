@@ -1,17 +1,20 @@
 'use strict';
 
 // Include Gulp & Tools We'll Use
-var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
+var notify = require('gulp-notify');
+var jscs = require('gulp-jscs');
+var jshint = require('gulp-jshint');
+var gulp = require('gulp');
+var concat = require('gulp-concat');
+var rename = require('gulp-rename');
+var uglify = require('gulp-uglify');
 var del = require('del');
 var runSequence = require('run-sequence');
 var browserSync = require('browser-sync');
 var pagespeed = require('psi');
 var reload = browserSync.reload;
-// added by me
-var notify = require('gulp-notify');
-var jscs = require('gulp-jscs');
-var jshint = require('gulp-jshint');
+var pkg = require('./package.json');
 
 
 var AUTOPREFIXER_BROWSERS = [
@@ -71,21 +74,15 @@ gulp.task('serve', function () {
   gulp.watch(['app/js/*.js'], ['jshint',reload]);
 });
 
-// // Build Production Files, the Default Task
-// gulp.task('default', ['clean'], function (cb) {
-//   runSequence('styles', ['jshint', 'html', 'fonts', 'copy'], cb);
-// });
+/**
+ * build a production ready distribution
+ */
+gulp.task('build', function () {
+  return gulp.src('./app/js/*.js')
+    .pipe(concat(pkg.name + '.js'))
+    .pipe(gulp.dest('./dist/js'))
+    .pipe(rename(pkg.name + '.min.js'))
+    .pipe(uglify())
+    .pipe(gulp.dest('./dist'));
+});
 
-// Run PageSpeed Insights
-// Update `url` below to the public URL for your site
-// gulp.task('pagespeed', pagespeed.bind(null, {
-//   // By default, we use the PageSpeed Insights
-//   // free (no API key) tier. You can use a Google
-//   // Developer API key if you have one. See
-//   // http://goo.gl/RkN0vE for info key: 'YOUR_API_KEY'
-//   url: 'https://example.com',
-//   strategy: 'mobile'
-// }));
-
-// Load custom tasks from the `tasks` directory
-try { require('require-dir')('tasks'); } catch (err) {}
