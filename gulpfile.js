@@ -2,18 +2,19 @@
 
 // Include Gulp & Tools We'll Use
 var $ = require('gulp-load-plugins')();
-var notify = require('gulp-notify');
+var concat = require('gulp-concat');
+var browserSync = require('browser-sync');
+var del = require('del');
+var gulp = require('gulp');
 var jscs = require('gulp-jscs');
 var jshint = require('gulp-jshint');
-var gulp = require('gulp');
-var concat = require('gulp-concat');
-var rename = require('gulp-rename');
-var uglify = require('gulp-uglify');
-var del = require('del');
-var runSequence = require('run-sequence');
-var browserSync = require('browser-sync');
+var notify = require('gulp-notify');
 var pagespeed = require('psi');
 var reload = browserSync.reload;
+var rename = require('gulp-rename');
+var runSequence = require('run-sequence');
+var size = require('gulp-size');
+var uglify = require('gulp-uglify');
 var pkg = require('./package.json');
 
 
@@ -83,6 +84,7 @@ gulp.task('build', function () {
     .pipe(gulp.dest('./dist/js'))
     .pipe(rename(pkg.name + '.min.js'))
     .pipe(uglify())
-    .pipe(gulp.dest('./dist'));
+    .pipe(size())
+    .pipe(gulp.dest('./dist/js'));
 });
 

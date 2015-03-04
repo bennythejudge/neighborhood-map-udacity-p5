@@ -21,6 +21,7 @@
     "gulp-concat": "^2.5.2",
     "gulp-jscs": "^1.4.0",
     "gulp-jshint": "^1.9.2",
+    "gulp-minify-html": "^1.0.0",
     "gulp-notify": "^2.2.0",
     "gulp-rename": "^1.2.0",
     "gulp-size": "^1.2.1",
