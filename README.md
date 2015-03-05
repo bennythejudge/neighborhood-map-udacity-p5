@@ -26,3 +26,25 @@ List of tasks
 - 'minify-css'
 - 'build': minify the javascript, the html and css and places the minified files in /dist, dist/js and dist/css
 
+Please note that since I could not load the node_modules directory in git, in order to use gulp you will need to download all the required modules.
+List of required modules:
+gulp-load-plugins')();
+gulp-concat
+browser-sync
+del
+gulp
+gulp-jscs
+gulp-jshint
+gulp-notify
+psi
+var reload = browserSync.reload;
+gulp-rename
+run-sequence
+gulp-size
+gulp-uglify
+gulp-minify-html
+gulp-minify-css
+
+To load the modules execute:
+    npm i -D gulp-load-plugins gulp-concat browser-sync del gulp gulp-jscs gulp-jshint gulp-notify psi gulp-rename run-sequence gulp-size gulp-uglify gulp-minify-html gulp-minify-css 
+
