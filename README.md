@@ -1,4 +1,7 @@
 # Udacity FEND - P5 - Neighborhood map
+
+[![GuardRails badge](https://badges.production.guardrails.io/bennythejudge/neighborhood-map-udacity-p5.svg)](https://www.guardrails.io)
+
 ## My London Map (my favourites and coworking spaces + the FTSE index updated in real time)
 ### by Benedetto Lo Giudice
 
